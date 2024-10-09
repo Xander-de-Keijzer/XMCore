@@ -16,6 +16,7 @@ repositories {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.1")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:1.7.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
     implementation(kotlin("reflect"))
 }

@@ -1,14 +1,14 @@
 package nl.xandermarc.mc.lib.math
 
-import kotlinx.serialization.Serializable
+import kotlin.math.sqrt
 
-@Serializable
 data class Vec(
     val x: Double = 0.0,
     val y: Double = 0.0,
     val z: Double = 0.0
 ) {
 
+    // Operator Overloads
     /**
      * Adds two vectors component-wise.
      *
@@ -41,7 +41,7 @@ data class Vec(
      * @param other The other vector.
      * @return The distance between the two vectors.
      */
-    fun distance(other: Vec): Double {
+    fun distanceTo(other: Vec): Double {
         val dx = this.x - other.x
         val dy = this.y - other.y
         val dz = this.z - other.z
@@ -54,7 +54,7 @@ data class Vec(
      * @param other The other vector.
      * @return The squared distance between the two vectors.
      */
-    fun distanceSquared(other: Vec): Double {
+    fun distanceSquaredTo(other: Vec): Double {
         val dx = this.x - other.x
         val dy = this.y - other.y
         val dz = this.z - other.z
@@ -62,6 +62,7 @@ data class Vec(
     }
 
     // Lerp Function
+
     /**
      * Linearly interpolates between this vector and the [target] vector by the factor [t].
      *
@@ -73,6 +74,8 @@ data class Vec(
         val clampedT = t.coerceIn(0.0, 1.0)
         return this + (target - this) * clampedT
     }
+
+    // Additional Utility Functions
 
     /**
      * Calculates the dot product of this vector with another vector.
@@ -94,15 +97,11 @@ data class Vec(
         x * other.y - y * other.x
     )
 
-    val lengthSquared get() = x * x + y * y + z * z
+    val lengthSquared: Double
+        get() = x*x+y*y+z*z
 
-    /**
-     * Calculates the magnitude (length) of the vector.
-     *
-     * @return The magnitude as a Double.
-     */
     val length: Double
-        get() = kotlin.math.sqrt(lengthSquared)
+        get() = sqrt(lengthSquared)
 
     /**
      * Normalizes the vector to have a magnitude of 1.
@@ -118,5 +117,4 @@ data class Vec(
             this
         }
     }
-
 }
