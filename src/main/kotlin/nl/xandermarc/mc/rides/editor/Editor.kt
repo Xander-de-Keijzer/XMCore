@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.rides.editor
 
-import nl.xandermarc.mc.lib.extensions.log
+import nl.xandermarc.mc.lib.logging.debug
 import org.bukkit.entity.Player
 
 abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int, Tool<T>>) {
@@ -14,13 +14,13 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
 
     fun click(player: Player, clicked: Int) {
 
-        log { "${player.name} clicked at ${clicked}" }
+        debug { "${player.name} clicked at ${clicked}" }
         if (player != this.player) return
 
         toolMapList.forEach { toolMap ->
             toolMap.forEach { (slot, tool) ->
                 if (clicked == slot) {
-                    log { "Clicked at ${player.name} to $slot" }
+                    debug { "Clicked at ${player.name} to $slot" }
                     tool.onRightClick?.second?.invoke(instance)
                     tool.onClick?.second?.invoke(instance)
                 }

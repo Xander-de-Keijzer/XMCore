@@ -5,7 +5,8 @@ import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import nl.xandermarc.mc.Player
+
+class Player(val name: String)
 
 object PlayerSerializer : KSerializer<Player> {
     override val descriptor = PrimitiveSerialDescriptor("Player", PrimitiveKind.STRING)

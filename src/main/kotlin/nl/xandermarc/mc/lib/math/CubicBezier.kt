@@ -42,7 +42,7 @@ class CubicBezier(
         for (i in 1..steps) {
             val t = i.toDouble() / steps
             val currentPoint = evaluate(t)
-            length += previousPoint.distance(currentPoint)
+            length += previousPoint.distanceTo(currentPoint)
             previousPoint = currentPoint
         }
         return length
@@ -78,7 +78,7 @@ class CubicBezier(
         for (i in 1..steps) {
             val currentT = i.toDouble() / steps * t
             val currentPoint = evaluate(currentT)
-            length += previousPoint.distance(currentPoint)
+            length += previousPoint.distanceTo(currentPoint)
             previousPoint = currentPoint
         }
         return length

@@ -3,8 +3,6 @@ package nl.xandermarc.mc.lib.sql
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import nl.xandermarc.mc.lib.logging.infoAll
-import nl.xandermarc.mc.lib.logging.warn
 import nl.xandermarc.mc.lib.logging.warnAll
 import nl.xandermarc.mc.lib.sql.entities.SessionCoercion
 import nl.xandermarc.mc.lib.sql.entities.User

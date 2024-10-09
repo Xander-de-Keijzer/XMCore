@@ -3,4 +3,4 @@ version: '0.0.1'
 main: nl.xandermarc.mc.Main
 description: Xander Marc's Minecraft Core Plugin
 api-version: '1.21.1'
-loader: nl.xandermarc.mc.PaperPluginLoader
+loader: nl.xandermarc.mc.paper.PaperPluginLoader

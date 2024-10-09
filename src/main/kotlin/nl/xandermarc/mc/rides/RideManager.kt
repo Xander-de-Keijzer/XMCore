@@ -5,7 +5,10 @@ import nl.xandermarc.mc.lib.logging.info
 import nl.xandermarc.mc.lib.logging.warn
 
 object RideManager {
-    private val rides = arrayListOf<Ride>()
+    val rides = arrayListOf<Ride>()
+    val rideNames
+        get() = rides.map { it.name }.toTypedArray()
+
     fun register(ride: Ride) {
         if (!ride.enabled) ride.register().warn("Ride ${ride.name} was not enabled whilst registering")
         if (!isRegistered(ride)) rides.add(ride).info { "Registered ride ${ride.name} (success=$this)" }

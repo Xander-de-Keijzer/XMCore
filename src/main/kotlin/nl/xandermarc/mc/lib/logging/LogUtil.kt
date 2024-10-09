@@ -1,14 +1,14 @@
 package nl.xandermarc.mc.lib.logging
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.format
+//import kotlinx.datetime.Clock
+//import kotlinx.datetime.Instant
+//import kotlinx.datetime.format
 
 private val lambdaStr = "\\\$lambda\\\$\\d*".toRegex()
 
-fun <T> T.log(priority: LogPriority, message: String, delegated: Int = 2, timestamp: Instant = Clock.System.now()): T {
+fun <T> T.log(priority: LogPriority, message: String, delegated: Int = 2): T {//, timestamp: Instant = Clock.System.now()): T {
     if (LogSettings.shouldLog(priority)) {
-        println("${timestamp.format(LogSettings.dateTimeFormat)}, ${lambdaStr.replace(Exception().stackTrace[delegated].toString(), "")}) [$priority]: $message")
+        println("${lambdaStr.replace(Exception().stackTrace[delegated].toString(), "")}) [$priority]: $message")
     }
     return this
 }
