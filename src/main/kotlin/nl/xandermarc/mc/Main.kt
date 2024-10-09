@@ -1,7 +1,5 @@
 package nl.xandermarc.mc
 
-import nl.xandermarc.mc.rides.commands.rideCommand
-import nl.xandermarc.mc.rides.editor.EditorManager
 import org.bukkit.World
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -20,7 +18,6 @@ class Main: JavaPlugin(), Listener {
     override fun onEnable() {
         instance = this
 
-        rideCommand()
         server.pluginManager.registerEvents(this, this)
 
         logger.info("Hello world!")
@@ -28,7 +25,6 @@ class Main: JavaPlugin(), Listener {
 
     @EventHandler
     fun onClick(event: PlayerInteractEvent) {
-        EditorManager.handleClick(event)
     }
 
 }
