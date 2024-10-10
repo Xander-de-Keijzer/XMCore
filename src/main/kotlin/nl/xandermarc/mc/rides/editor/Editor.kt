@@ -12,18 +12,17 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
         loadedTools = (loadedTools + 1) % toolMapList.size
     }
 
-    fun click(player: Player, clicked: Int) {
+    fun click(clicked: Int) {
 
-        debug { "${player.name} clicked at ${clicked}" }
-        if (player != this.player) return
+        debug { "${player.name} clicked at $clicked" }
 
         toolMapList.forEach { toolMap ->
-            toolMap.forEach { (slot, tool) ->
-                if (clicked == slot) {
-                    debug { "Clicked at ${player.name} to $slot" }
-                    tool.onRightClick?.second?.invoke(instance)
-                    tool.onClick?.second?.invoke(instance)
-                }
+            toolMap.filter {
+                it.key == clicked
+            }.values.forEach { tool ->
+                debug { "Clicked at ${player.name} to $clicked" }
+                tool.onRightClick.invoke(instance)
+                tool.onClick.invoke(instance)
             }
         }
     }

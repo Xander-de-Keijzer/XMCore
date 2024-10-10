@@ -12,21 +12,16 @@ object EditorManager {
         editors.add(editor)
     }
 
-    fun isUsingEditor(player: Player): Boolean {
-        for (editor in editors) {
-            if (editor.player == player) {
-                return true
-            }
-        }
-        return false
-    }
+    fun isUsingEditor(player: Player): Boolean =
+        editors.any { it.player == player }
 
     fun unregisterEditor(editor: Editor<*>) {
         editors.remove(editor)
     }
 
     fun stopEditor(player: Player) {
-        editors.removeAll { it.apply { stop() }.player == player }
+        editors.filter { it.player == player }.forEach { it.stop() }
+        editors.removeAll { it.player == player }
     }
 
     fun stopEditors() {
@@ -35,8 +30,10 @@ object EditorManager {
     }
 
     fun handleClick(event: PlayerInteractEvent) {
-        for (editor in editors) {
-            editor.click(event.player, 0)
+        editors.filter {
+            it.player == event.player
+        }.forEach {
+            it.click(1)
         }
     }
 

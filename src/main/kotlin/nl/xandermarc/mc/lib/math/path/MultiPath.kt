@@ -3,7 +3,7 @@ package nl.xandermarc.mc.lib.math.path
 import nl.xandermarc.mc.lib.math.Vec
 
 class MultiPath(
-    private val paths: List<Path>
+    private vararg val paths: Path
 ): Path() {
     override fun getPositionAt(t: Double): Vec {
         val totalT = (t * paths.size)
