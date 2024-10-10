@@ -2,7 +2,6 @@ package nl.xandermarc.mc.rides.tracked
 
 import nl.xandermarc.mc.lib.logging.debugAll
 import nl.xandermarc.mc.rides.Ride
-import nl.xandermarc.mc.rides.tracked.entities.Train
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class TrackedRide(rideName: String) : Ride(rideName) {

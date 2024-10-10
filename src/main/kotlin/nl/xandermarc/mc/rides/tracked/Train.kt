@@ -1,7 +1,4 @@
-package nl.xandermarc.mc.rides.tracked.entities
-
-import nl.xandermarc.mc.rides.tracked.Track
-import nl.xandermarc.mc.rides.tracked.TrackPosition
+package nl.xandermarc.mc.rides.tracked
 
 data class Train(
     val id: Int,

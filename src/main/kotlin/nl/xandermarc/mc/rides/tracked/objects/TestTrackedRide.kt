@@ -1,7 +1,7 @@
 package nl.xandermarc.mc.rides.tracked.objects
 
 import nl.xandermarc.mc.rides.tracked.TrackedRide
-import nl.xandermarc.mc.rides.tracked.entities.Train
+import nl.xandermarc.mc.rides.tracked.Train
 
 object TestTrackedRide : TrackedRide("test") { // Define carts sizes models etc
     override fun init() {
