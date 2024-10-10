@@ -1,6 +1,5 @@
 package nl.xandermarc.mc.lib.commands
 
-import io.papermc.paper.command.brigadier.Commands.argument
 import io.papermc.paper.command.brigadier.Commands.literal
 import nl.xandermarc.mc.rides.RideManager
 

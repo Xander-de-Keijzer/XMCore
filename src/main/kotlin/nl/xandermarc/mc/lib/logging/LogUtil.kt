@@ -4,23 +4,35 @@ package nl.xandermarc.mc.lib.logging
 //import kotlinx.datetime.Instant
 //import kotlinx.datetime.format
 
-private val lambdaStr = "\\\$lambda\\\$\\d*".toRegex()
+private val lambdaRegex = "\\\$lambda\\\$\\d*".toRegex()
+private val jarRegex = ".*\\.jar//".toRegex()
 
-fun <T> T.log(priority: LogPriority, message: String, delegated: Int = 2): T {//, timestamp: Instant = Clock.System.now()): T {
+fun trace(): String =
+    Exception().stackTrace.map {
+        it.toString()
+    }.first {
+        !it.contains("nl.xandermarc.mc.lib.logging")
+    }.replace(
+        lambdaRegex, ""
+    ).replace(
+        jarRegex, ""
+    )
+
+fun <T> T.log(priority: LogPriority, message: String): T {//, timestamp: Instant = Clock.System.now()): T {
     if (LogSettings.shouldLog(priority)) {
-        println("${lambdaStr.replace(Exception().stackTrace[delegated].toString(), "")}) [$priority]: $message")
+        println("${trace()} [$priority]: $message")
     }
     return this
 }
-fun <T> T.debug(message: String, delegated: Int = 4): T = log(LogPriority.DEBUG, message, delegated)
-fun <T> T.info(message: String, delegated: Int = 4): T = log(LogPriority.INFO, message, delegated)
-fun <T> T.warn(message: String, delegated: Int = 4): T = log(LogPriority.WARN, message, delegated)
-fun <T> T.error(message: String, delegated: Int = 4): T = log(LogPriority.ERROR, message, delegated)
-inline fun <T> T.debug(message: T.() -> String): T = debug(message(), 3)
-inline fun <T> T.info(message: T.() -> String): T = info(message(), 3)
-inline fun <T> T.warn(message: T.() -> String): T = warn(message(), 3)
-inline fun <T> T.error(message: T.() -> String): T = error(message(), 3)
-fun <T, C : Iterable<T>> C.debugAll(message: T.() -> String): C = onEach { debug(message(it), 4) }
-fun <T, C : Iterable<T>> C.infoAll(message: T.() -> String): C = onEach { info(message(it), 4) }
-fun <T, C : Iterable<T>> C.warnAll(message: T.() -> String): C = onEach { warn(message(it), 4) }
-fun <T, C : Iterable<T>> C.errorAll(message: T.() -> String): C = onEach { error(message(it), 4) }
+fun <T> T.debug(message: String): T = log(LogPriority.DEBUG, message)
+fun <T> T.info(message: String): T = log(LogPriority.INFO, message)
+fun <T> T.warn(message: String): T = log(LogPriority.WARN, message)
+fun <T> T.error(message: String): T = log(LogPriority.ERROR, message)
+inline fun <T> T.debug(message: T.() -> String): T = debug(message())
+inline fun <T> T.info(message: T.() -> String): T = info(message())
+inline fun <T> T.warn(message: T.() -> String): T = warn(message())
+inline fun <T> T.error(message: T.() -> String): T = error(message())
+inline fun <T> Iterable<T>.debugAll(message: T.() -> String): Iterable<T> = onEach { debug(message(it)) }
+inline fun <T> Iterable<T>.infoAll(message: T.() -> String): Iterable<T> = onEach { info(message(it)) }
+inline fun <T> Iterable<T>.warnAll(message: T.() -> String): Iterable<T> = onEach { warn(message(it)) }
+inline fun <T> Iterable<T>.errorAll(message: T.() -> String): Iterable<T> = onEach { error(message(it)) }
