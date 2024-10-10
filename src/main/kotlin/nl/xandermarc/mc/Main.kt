@@ -2,9 +2,7 @@ package nl.xandermarc.mc
 
 import nl.xandermarc.mc.lib.commands.ExampleCommand
 import nl.xandermarc.mc.lib.commands.registerCommands
-import nl.xandermarc.mc.lib.logging.debug
-import nl.xandermarc.mc.lib.math.Vec
-import nl.xandermarc.mc.rides.entities.DisplayEntity
+import nl.xandermarc.mc.rides.tracked.TrackManager
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -16,16 +14,14 @@ class Main: JavaPlugin() {
         val world: World by lazy { instance.server.worlds.first() }
     }
 
-    override fun onLoad() {
+    override fun onEnable() {
         instance = this
 
         registerCommands(
-            ExampleCommand
+            ExampleCommand,
+            TrackManager
         )
 
-    }
-
-    override fun onEnable() {
         logger.info("${pluginMeta.displayName} has been Enabled")
     }
 

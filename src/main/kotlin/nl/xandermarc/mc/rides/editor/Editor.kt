@@ -8,12 +8,22 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
     private val toolMapList = toolMaps.toList()
     private var loadedTools: Int = 0
 
+    private fun loadTools(index: Int) {
+        if (loadedTools == index) return
+        unloadTools()
+        loadedTools = index
+        // TODO Load tools
+    }
+
+    private fun unloadTools() {
+        // TODO Remove current loadedTools
+    }
+
     fun toggleTools() {
-        loadedTools = (loadedTools + 1) % toolMapList.size
+        loadTools((loadedTools + 1) % toolMapList.size)
     }
 
     fun click(clicked: Int) {
-
         debug { "${player.name} clicked at $clicked" }
 
         toolMapList.forEach { toolMap ->
@@ -27,5 +37,9 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
         }
     }
 
-    abstract fun stop()
+    fun close() {
+        unloadTools()
+        stop()
+    }
+    protected abstract fun stop()
 }
