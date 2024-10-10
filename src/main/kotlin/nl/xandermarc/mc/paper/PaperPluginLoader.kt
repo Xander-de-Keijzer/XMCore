@@ -5,22 +5,20 @@ import io.papermc.paper.plugin.loader.PluginLoader
 import io.papermc.paper.plugin.loader.library.impl.MavenLibraryResolver
 import org.eclipse.aether.artifact.DefaultArtifact
 import org.eclipse.aether.graph.Dependency
+import java.util.*
 
 class PaperPluginLoader : PluginLoader {
     override fun classloader(pluginClasspathBuilder: PluginClasspathBuilder?) {
-        val resolver = MavenLibraryResolver()
-        resolver.addDependency(
-            Dependency(
-                DefaultArtifact("org.jetbrains.kotlin:kotlin-stdlib:2.0.20"),
-                null
-            )
+        val dependencies = Arrays.asList(
+            "org.jetbrains.kotlin:kotlin-stdlib:2.0.20",
+            "org.jetbrains.kotlin:kotlin-reflect:2.0.20"
         )
-        resolver.addDependency(
-            Dependency(
-                DefaultArtifact("org.jetbrains.kotlin:kotlin-reflect:2.0.20"),
-                null
+        for (dependency in dependencies) {
+            val resolver = MavenLibraryResolver()
+            resolver.addDependency(
+                Dependency(DefaultArtifact(dependency), null)
             )
-        )
-        pluginClasspathBuilder?.addLibrary(resolver)
+            pluginClasspathBuilder?.addLibrary(resolver)
+        }
     }
 }

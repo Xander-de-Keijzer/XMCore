@@ -20,12 +20,12 @@ object EditorManager {
     }
 
     fun stopEditor(player: Player) {
-        editors.filter { it.player == player }.forEach { it.stop() }
+        editors.filter { it.player == player }.forEach { it.close() }
         editors.removeAll { it.player == player }
     }
 
     fun stopEditors() {
-        editors.forEach { it.stop() }
+        editors.forEach { it.close() }
         editors.clear()
     }
 

@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.rides.tracked.objects
+package nl.xandermarc.mc.rides.objects
 
 import nl.xandermarc.mc.rides.tracked.TrackedRide
 import nl.xandermarc.mc.rides.tracked.Train

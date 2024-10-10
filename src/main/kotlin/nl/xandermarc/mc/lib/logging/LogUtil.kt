@@ -8,7 +8,7 @@ private val lambdaRegex = "\\\$lambda\\\$\\d*".toRegex()
 private val jarRegex = ".*\\.jar//".toRegex()
 
 fun trace(): String =
-    Thread.currentThread().stackTrace.map {
+    Exception().stackTrace.map {
         it.toString()
     }.first {
         !it.contains("nl.xandermarc.mc.lib.logging")

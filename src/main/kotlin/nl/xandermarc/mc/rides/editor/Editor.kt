@@ -11,12 +11,16 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
     private fun loadTools(index: Int) {
         if (loadedTools == index) return
         unloadTools()
+        toolMapList[index].forEach { (slot, tool) ->
+            tool.addTo(player, slot)
+        }
         loadedTools = index
-        // TODO Load tools
     }
 
     private fun unloadTools() {
-        // TODO Remove current loadedTools
+        toolMapList[loadedTools].values.forEach {
+                tool -> tool.removeFrom(player)
+        }
     }
 
     fun toggleTools() {
