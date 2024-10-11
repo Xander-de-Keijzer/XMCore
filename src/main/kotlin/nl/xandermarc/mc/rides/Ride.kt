@@ -3,7 +3,13 @@ package nl.xandermarc.mc.rides
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import nl.xandermarc.mc.lib.logging.debug
+import nl.xandermarc.mc.lib.logging.info
 import nl.xandermarc.mc.lib.logging.warn
 
 abstract class Ride(val name: String) {
@@ -14,26 +20,82 @@ abstract class Ride(val name: String) {
     fun enable(): Boolean {
         if (enabled) return false
         asyncInitJob = GlobalScope.launch {
+            info("Ride $name is being enabled.")
+            debug("Initializing $name asynchronously...")
             initAsync()
+            debug("Asynchronous initializing of ride $name finished.")
             launch(Dispatchers.Default) {
+                debug("Initializing ride $name synchronously...")
                 init()
+                debug("Synchronous initializing of ride $name finished.")
+                enabled = true
+                info("Ride $name has been enabled.")
             }
         }
         return true
     }
-    fun disable() {
-        asyncInitJob?.apply {
-            if (isActive) {
-                warn { "Ride $name was disabled during asynchronous initialization" }
-                cancel()
-            }
-        }
+
+    private fun disable() {
+        info("Ride $name is being disabled...")
         remove()
         enabled = false
+        info("Ride $name has been disabled.")
     }
-    fun reset() {
+    fun disableAsync() {
+        if (asyncInitJob?.isActive == true) {
+            asyncInitJob?.warn {
+                "Ride $name is being disabled during asynchronous initialization, disabling the ride will be done after the initialization is complete."
+            }?.invokeOnCompletion {
+                disableAsync()
+            }
+        } else {
+            disable()
+        }
+    }
+    fun disableForce() {
+        asyncInitJob?.apply {
+            if (isActive) {
+                warn { "Ride $name is being force disabled during asynchronous initialization, current thread (${Thread.currentThread().name}) will be blocked until the async initialization is complete. (Further execution will be cancelled)" }
+                runBlocking { cancelAndJoin() }
+            }
+        }
+        disable()
+    }
+
+    private fun reset() {
+        info("Ride $name is resetting...")
         disable()
         enable()
+        info("Ride $name has been reset.")
+    }
+    fun resetAsync() {
+        if (asyncInitJob?.isActive == true) {
+            asyncInitJob?.warn {
+                "Ride $name is being reset during asynchronous initialization, disabling the ride will be done after the initialization is complete."
+            }?.invokeOnCompletion {
+                disable()
+                enable()
+            }
+        } else {
+            disable()
+            enable()
+        }
+    }
+    fun resetForce() {
+        asyncInitJob?.apply {
+            if (isActive) {
+                warn { "Ride $name is being force reset during asynchronous initialization, current thread (${Thread.currentThread().name}) will be blocked until the async initialization is complete. (Further execution will be cancelled)" }
+                runBlocking { cancelAndJoin() }
+            }
+        }
+        reset()
+    }
+
+    /**
+     * Invoke block on ride initialization complete coroutine completion
+     */
+    fun onRideEnableComplete(block: (Throwable?) -> Unit) {
+        asyncInitJob?.invokeOnCompletion(block)
     }
 
     /**

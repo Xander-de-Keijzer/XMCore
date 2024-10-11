@@ -5,7 +5,7 @@ package nl.xandermarc.mc.lib.logging
 //import kotlinx.datetime.format.char
 
 object LogSettings {
-    val level: LogPriority = LogPriority.DEBUG
+    val level: LogPriority = LogPriority.INFO
 //    val dateTimeFormat = DateTimeComponents.Format {
 //        date(LocalDate.Formats.ISO); char(' '); hour(); char(':'); minute(); char(':'); second()
 //    }

@@ -1,13 +1,19 @@
 package nl.xandermarc.mc.rides.tracked
 
+import nl.xandermarc.mc.lib.logging.debug
 import nl.xandermarc.mc.lib.logging.debugAll
+import nl.xandermarc.mc.lib.logging.info
 import nl.xandermarc.mc.rides.Ride
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class TrackedRide(rideName: String) : Ride(rideName) {
     private val nextTrainId = AtomicInteger(1)
     protected val tracks = arrayListOf<Track>()
+    val trackList
+        get() = tracks.toList()
     protected val trains = arrayListOf<Train>()
+    val trainList
+        get() = trains.toList()
 
     protected fun loadTrack(
         trackName: String,
@@ -58,10 +64,12 @@ abstract class TrackedRide(rideName: String) : Ride(rideName) {
     }
 
     override fun remove() {
+        info("Removing tracked ride $name...")
         trains.debugAll { "Removed: $this" }
         nextTrainId.set(1)
         trains.clear()
         tracks.clear()
         //TODO("Remove train instanced")
+        info("Removed tracked ride $name.")
     }
 }

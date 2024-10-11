@@ -9,18 +9,41 @@ import java.util.*
 
 class PaperPluginLoader : PluginLoader {
     override fun classloader(pluginClasspathBuilder: PluginClasspathBuilder?) {
+        // URL : https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-reflect/2.0.20/kotlin-reflect-2.0.20.jar
+        // URK : https://repo1.maven.org/maven2/org/jetbrains/kotlinx/kotlinx-coroutines-core/1.9.0/
         val dependencies = Arrays.asList(
-            "org.jetbrains.kotlin:kotlin-stdlib:2.0.20",
-            "org.jetbrains.kotlin:kotlin-reflect:2.0.20",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0",
-            "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0",
-        )
-        for (dependency in dependencies) {
-            val resolver = MavenLibraryResolver()
-            resolver.addDependency(
-                Dependency(DefaultArtifact(dependency), null)
+            Arrays.asList(
+                "org.jetbrains.kotlin:kotlin-stdlib:2.0.20",
+                "org/jetbrains/kotlin/kotlin-stdlib/2.0.20",
+                "kotlin-stdlib-2.0.20"
+            ),
+            Arrays.asList(
+                "org.jetbrains.kotlin:kotlin-reflect:2.0.20",
+                "org/jetbrains/kotlin/kotlin-reflect/2.0.20",
+                "kotlin-reflect-2.0.20"
+            ),
+            Arrays.asList(
+                "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0",
+                "org/jetbrains/kotlinx/kotlinx-coroutines-core/1.9.0",
+                "kotlinx-coroutines-core-1.9.0"
+            ),
+            Arrays.asList(
+                "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0",
+                "org/jetbrains/kotlinx/kotlinx-coroutines-core-jvm/1.9.0",
+                "kotlinx-coroutines-core-jvm-1.9.0"
             )
-            pluginClasspathBuilder?.addLibrary(resolver)
+        )
+        try {
+            for (dependency in dependencies) {
+                val resolver = MavenLibraryResolver()
+                resolver.addDependency(
+                    Dependency(DefaultArtifact(dependency[0]), null)
+                )
+                pluginClasspathBuilder?.addLibrary(resolver)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            println(e.message)
         }
     }
 }

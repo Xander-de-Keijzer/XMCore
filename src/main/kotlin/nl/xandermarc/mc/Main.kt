@@ -3,11 +3,13 @@ package nl.xandermarc.mc
 import nl.xandermarc.mc.lib.commands.ExampleCommand
 import nl.xandermarc.mc.lib.commands.registerCommands
 import nl.xandermarc.mc.lib.logging.info
+import nl.xandermarc.mc.lib.logging.log
 import nl.xandermarc.mc.rides.RideManager
 import nl.xandermarc.mc.rides.objects.TestTrackedRide
 import nl.xandermarc.mc.rides.tracked.TrackManager
 import org.bukkit.World
 import org.bukkit.plugin.java.JavaPlugin
+import java.util.logging.Level
 
 @Suppress("UnstableApiUsage")
 class Main: JavaPlugin() {
@@ -23,14 +25,13 @@ class Main: JavaPlugin() {
         RideManager.register(
             TestTrackedRide
         )
-        info("Done registering")
 
         registerCommands(
             ExampleCommand,
             TrackManager
         )
 
-        logger.info("${pluginMeta.displayName} has been Enabled")
+        logger.info("${pluginMeta.displayName} has been enabled.")
     }
 
 }

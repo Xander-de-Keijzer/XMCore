@@ -11,8 +11,8 @@ object RideManager {
 
     fun register(ride: Ride) {
         if (isRegistered(ride)) return
-        if (!ride.enable()) warn("Ride ${ride.name} was already enabled whilst registering")
         rides.add(ride).info { "Registered ride ${ride.name} (success=$this)" }
+        if (!ride.enable()) warn("Ride ${ride.name} was already enabled whilst registering")
     }
     fun register(vararg rides: Ride) = rides.forEach { register(it) }
     fun isRegistered(rideName: String) =
@@ -24,7 +24,7 @@ object RideManager {
     }
     fun unregister(ride: Ride) {
         if (!isRegistered(ride)) return
-        ride.disable()
+        ride.disableAsync()
         rides.remove(ride).info("Unregistered ride ${ride.name} (success=$this)")
     }
     fun update() {
