@@ -11,7 +11,9 @@ class PaperPluginLoader : PluginLoader {
     override fun classloader(pluginClasspathBuilder: PluginClasspathBuilder?) {
         val dependencies = Arrays.asList(
             "org.jetbrains.kotlin:kotlin-stdlib:2.0.20",
-            "org.jetbrains.kotlin:kotlin-reflect:2.0.20"
+            "org.jetbrains.kotlin:kotlin-reflect:2.0.20",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0",
+            "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0",
         )
         for (dependency in dependencies) {
             val resolver = MavenLibraryResolver()

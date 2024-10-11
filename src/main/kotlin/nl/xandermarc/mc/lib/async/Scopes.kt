@@ -1,9 +1,8 @@
 package nl.xandermarc.mc.lib.async
 
+import kotlinx.coroutines.*
 import nl.xandermarc.mc.Main
-import java.util.concurrent.TimeUnit
 
-private val asyncScheduler by lazy { Main.instance.server.asyncScheduler }
 private val syncScheduler by lazy { Main.instance.server.globalRegionScheduler }
 
 fun sync(block: () -> Unit) =
@@ -11,30 +10,6 @@ fun sync(block: () -> Unit) =
         block()
     }
 
-fun sync(delay: Long, block: () -> Unit) =
-    syncScheduler.runDelayed(
-        Main.instance,
-        { block() },
-        delay
-    )
-
-fun async(block: () -> Unit, complete: () -> Unit) =
-    async {
-        block()
-        sync {
-            complete()
-        }
-    }
-
-fun async(block: () -> Unit) =
-    asyncScheduler.runNow(Main.instance) {
-        block()
-    }
-
-fun async(delay: Long, block: () -> Unit) =
-    asyncScheduler.runDelayed(
-        Main.instance,
-        { block() },
-        delay,
-        TimeUnit.MICROSECONDS
-    )
+fun <T> async(block: CoroutineScope.() -> T) = runBlocking {
+    async(Dispatchers.IO, block=block)
+}

@@ -1,6 +1,5 @@
 package nl.xandermarc.mc.rides
 
-import nl.xandermarc.mc.lib.async.executeAsync
 import nl.xandermarc.mc.lib.logging.debug
 import nl.xandermarc.mc.lib.logging.info
 import nl.xandermarc.mc.lib.logging.warn
@@ -12,16 +11,10 @@ object RideManager {
 
     fun register(ride: Ride) {
         if (isRegistered(ride)) return
-        if (!ride.enabled) ride.init() else warn("Ride ${ride.name} was already enabled whilst registering")
-        rides.add(ride).info { "Registered ride ${ride.name} (success=$this)" }
-    }
-    fun registerAsync(ride: Ride) {
-        if (isRegistered(ride)) return
-        if (!ride.enabled) ride.init() else warn("Ride ${ride.name} was already enabled whilst registering")
+        if (!ride.enable()) warn("Ride ${ride.name} was already enabled whilst registering")
         rides.add(ride).info { "Registered ride ${ride.name} (success=$this)" }
     }
     fun register(vararg rides: Ride) = rides.forEach { register(it) }
-    fun registerAsync(vararg rides: Ride) = rides.forEach { registerAsync(it) }
     fun isRegistered(rideName: String) =
         rides.any { it.name == rideName }.debug { "Ride $rideName (registered=$this)" }
     fun isRegistered(ride: Ride) =
@@ -31,7 +24,7 @@ object RideManager {
     }
     fun unregister(ride: Ride) {
         if (!isRegistered(ride)) return
-        if (ride.enabled) ride.remove() else ride.warn("Ride ${ride.name} was already disabled whilst unregistering")
+        ride.disable()
         rides.remove(ride).info("Unregistered ride ${ride.name} (success=$this)")
     }
     fun update() {

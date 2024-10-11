@@ -9,9 +9,9 @@ abstract class TrackedRide(rideName: String) : Ride(rideName) {
     protected val tracks = arrayListOf<Track>()
     protected val trains = arrayListOf<Train>()
 
-    protected fun addTrack(
+    protected fun loadTrack(
         trackName: String,
-        builder: Track.() -> Unit
+        builder: Track.() -> Unit = {}
     ) {
         tracks.add(
             TrackManager.getOrCreate(trackName)
@@ -45,7 +45,7 @@ abstract class TrackedRide(rideName: String) : Ride(rideName) {
 
     protected fun track(name: String) = tracks.find { it.name == name }
 
-    protected inline fun track(name: String, f: (Track) -> Unit) {
+    protected inline fun track(name: String, f: Track.() -> Unit) {
         track(name)?.let { f(it) }
     }
 
