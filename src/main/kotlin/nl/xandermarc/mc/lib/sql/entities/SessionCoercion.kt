@@ -12,5 +12,6 @@ class SessionCoercion(id: EntityID<Int>) : IntEntity(id) {
     val coercedAt by SessionCoercions.coercedAt
     var coercedTo by SessionCoercions.coercedTo
 
-    override fun toString() = "SessionCoercion(id=$id, session=${session.id}, coercedAt=$coercedAt, coercedTo=$coercedTo)"
+    override fun toString() =
+        "SessionCoercion(id=$id, session=${session.id}, coercedAt=$coercedAt, coercedTo=$coercedTo)"
 }

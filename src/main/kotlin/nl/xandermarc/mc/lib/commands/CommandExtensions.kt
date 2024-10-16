@@ -1,10 +1,6 @@
 package nl.xandermarc.mc.lib.commands
 
-import com.mojang.brigadier.arguments.DoubleArgumentType
-import com.mojang.brigadier.arguments.FloatArgumentType
-import com.mojang.brigadier.arguments.IntegerArgumentType
-import com.mojang.brigadier.arguments.LongArgumentType
-import com.mojang.brigadier.arguments.StringArgumentType
+import com.mojang.brigadier.arguments.*
 import com.mojang.brigadier.builder.ArgumentBuilder
 import com.mojang.brigadier.builder.RequiredArgumentBuilder
 import com.mojang.brigadier.context.CommandContext
@@ -57,16 +53,23 @@ fun <S, T : CommandContext<S>> T.getDouble(
 ): Double = DoubleArgumentType.getDouble(this, name)
 
 fun stringArgument(name: String) = argument(name, StringArgumentType.word())
-fun intArgument(name: String, min: Int = Int.MIN_VALUE, max: Int = Int.MAX_VALUE) = argument(name, IntegerArgumentType.integer(min, max))
-fun longArgument(name: String, min: Long = Long.MIN_VALUE, max: Long = Long.MAX_VALUE) = argument(name, LongArgumentType.longArg(min, max))
-fun floatArgument(name: String, min: Float = Float.MIN_VALUE, max: Float = Float.MAX_VALUE) = argument(name, FloatArgumentType.floatArg(min, max))
-fun doubleArgument(name: String, min: Double = Double.MIN_VALUE, max: Double = Double.MAX_VALUE) = argument(name, DoubleArgumentType.doubleArg(min, max))
+fun intArgument(name: String, min: Int = Int.MIN_VALUE, max: Int = Int.MAX_VALUE) =
+    argument(name, IntegerArgumentType.integer(min, max))
+
+fun longArgument(name: String, min: Long = Long.MIN_VALUE, max: Long = Long.MAX_VALUE) =
+    argument(name, LongArgumentType.longArg(min, max))
+
+fun floatArgument(name: String, min: Float = Float.MIN_VALUE, max: Float = Float.MAX_VALUE) =
+    argument(name, FloatArgumentType.floatArg(min, max))
+
+fun doubleArgument(name: String, min: Double = Double.MIN_VALUE, max: Double = Double.MAX_VALUE) =
+    argument(name, DoubleArgumentType.doubleArg(min, max))
 
 fun SuggestionsBuilder.suggestAll(suggestions: Iterable<String>) =
     suggestions.forEach { suggest(it) }
 
 fun SuggestionsBuilder.suggestRemaining(suggestions: Iterable<String>) =
-    suggestAll(suggestions.filter{ it.lowercase().startsWith(remainingLowerCase) })
+    suggestAll(suggestions.filter { it.lowercase().startsWith(remainingLowerCase) })
 
 fun RequiredArgumentBuilder<CommandSourceStack, String>.suggest(
     suggestions: Iterable<String>

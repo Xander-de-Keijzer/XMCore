@@ -17,8 +17,8 @@ data class Train(
         fun withPosition(position: Double) = apply { this.position = position }
 
         fun build(): Train {
-            val trackSegment = track.getSegment(segment) ?:
-                throw IllegalArgumentException("Segment $segment not found in track ${track.name}")
+            val trackSegment = track.segments[segment]
+                ?: throw IllegalArgumentException("Segment $segment not found in track ${track.name}")
             val trackPosition = TrackPosition(track, trackSegment, position)
             return Train(id, trackPosition, weight)
         }

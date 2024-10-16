@@ -1,6 +1,6 @@
-name: XMCore
-version: '0.0.1'
-main: nl.xandermarc.mc.Main
+name: XMC
 description: Xander Marc's Minecraft Core Plugin
+version: '0.0.1'
 api-version: '1.21.1'
-loader: nl.xandermarc.mc.paper.PaperPluginLoader
+main: nl.xandermarc.mc.XMCPlugin
+loader: nl.xandermarc.mc.XMCLoader

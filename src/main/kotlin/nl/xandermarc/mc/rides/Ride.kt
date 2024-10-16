@@ -1,125 +1,100 @@
 package nl.xandermarc.mc.rides
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
+import nl.xandermarc.mc.lib.extensions.EnabledState
+import nl.xandermarc.mc.lib.extensions.hexKey
+import nl.xandermarc.mc.lib.extensions.launchReadJob
 import nl.xandermarc.mc.lib.logging.debug
 import nl.xandermarc.mc.lib.logging.info
-import nl.xandermarc.mc.lib.logging.warn
+import kotlin.coroutines.coroutineContext
 
 abstract class Ride(val name: String) {
-    private var asyncInitJob: Job? = null
-    var enabled = false
-        private set
+    private var asyncJob: Job? = null
+    var state: EnabledState = EnabledState.DISABLED
+        private set(value) {
+            debug("Ride $name changed state from $field to $value")
+            field = value
+        }
 
-    fun enable(): Boolean {
-        if (enabled) return false
-        asyncInitJob = GlobalScope.launch {
-            info("Ride $name is being enabled.")
-            debug("Initializing $name asynchronously...")
-            initAsync()
-            debug("Asynchronous initializing of ride $name finished.")
+    private suspend fun joinJob(job: Job?) {
+        coroutineContext.ensureActive()
+        if (job == null || job.isCompleted) return
+        debug("Ride $name waiting on current asynchronous job ($job) to complete...")
+        job.join()
+        coroutineContext.ensureActive()
+    }
+
+    fun enable() = asyncJob.let { currentJob ->
+        launchReadJob {
+            joinJob(currentJob)
+            synchronized(state) {
+                if (state == EnabledState.ENABLED) return@launchReadJob
+                check(state == EnabledState.DISABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
+                state = EnabledState.ENABLING
+            }.info("Ride $name is being enabled.").debug("Initializing ride $name asynchronously...")
+            ensureActive()
+            initAsync().debug("Asynchronous initializing of ride $name finished.")
+            ensureActive()
             launch(Dispatchers.Default) {
                 debug("Initializing ride $name synchronously...")
-                init()
-                debug("Synchronous initializing of ride $name finished.")
-                enabled = true
-                info("Ride $name has been enabled.")
+                init().debug("Synchronous initializing of ride $name finished.")
+                synchronized(state) { state = EnabledState.ENABLED }.info("Ride $name has been enabled.")
             }
         }
-        return true
-    }
+    }.also { asyncJob = it }.debug { "Started enable job for ride $name. ($hexKey)" }
 
-    private fun disable() {
-        info("Ride $name is being disabled...")
-        remove()
-        enabled = false
-        info("Ride $name has been disabled.")
-    }
-    fun disableAsync() {
-        if (asyncInitJob?.isActive == true) {
-            asyncInitJob?.warn {
-                "Ride $name is being disabled during asynchronous initialization, disabling the ride will be done after the initialization is complete."
-            }?.invokeOnCompletion {
-                disableAsync()
+    fun disable() = asyncJob.let { currentJob ->
+        launchReadJob {
+            joinJob(currentJob)
+            synchronized(state) {
+                if (state == EnabledState.DISABLED) return@launchReadJob
+                check(state == EnabledState.ENABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
+                state = EnabledState.DISABLING
             }
-        } else {
-            disable()
+            info("Ride $name is being disabled...")
+            remove()
+            synchronized(state) { state = EnabledState.DISABLED }
+            info("Ride $name has been disabled.")
         }
-    }
-    fun disableForce() {
-        asyncInitJob?.apply {
-            if (isActive) {
-                warn { "Ride $name is being force disabled during asynchronous initialization, current thread (${Thread.currentThread().name}) will be blocked until the async initialization is complete. (Further execution will be cancelled)" }
-                runBlocking { cancelAndJoin() }
-            }
-        }
-        disable()
-    }
+    }.also { asyncJob = it }.debug { "Started disable job for ride $name. ($hexKey)" }
 
-    private fun reset() {
-        info("Ride $name is resetting...")
-        disable()
-        enable()
-        info("Ride $name has been reset.")
-    }
-    fun resetAsync() {
-        if (asyncInitJob?.isActive == true) {
-            asyncInitJob?.warn {
-                "Ride $name is being reset during asynchronous initialization, disabling the ride will be done after the initialization is complete."
-            }?.invokeOnCompletion {
-                disable()
-                enable()
+    fun reset() = asyncJob.let { currentJob ->
+        launchReadJob {
+            joinJob(currentJob)
+            info("Ride $name is being reset...")
+            synchronized(state) {
+                if (state == EnabledState.ENABLED) {
+                    state = EnabledState.DISABLING.debug("Disabling ride $name...")
+                    remove()
+                    state = EnabledState.DISABLED.debug("Ride $name has been disabled.")
+                }
+                check(state == EnabledState.DISABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
             }
-        } else {
-            disable()
-            enable()
+            ensureActive().debug("Initializing ride $name asynchronously...")
+            initAsync().debug("Asynchronous initializing of ride $name finished.")
+            ensureActive().debug("Initializing ride $name synchronously...")
+            launch(Dispatchers.Default) {
+                init().debug("Synchronous initializing of ride $name finished.")
+                synchronized(state) { state = EnabledState.ENABLED }.info("Ride $name has been enabled.")
+            }
+            info("Ride $name has been reset.")
         }
-    }
-    fun resetForce() {
-        asyncInitJob?.apply {
-            if (isActive) {
-                warn { "Ride $name is being force reset during asynchronous initialization, current thread (${Thread.currentThread().name}) will be blocked until the async initialization is complete. (Further execution will be cancelled)" }
-                runBlocking { cancelAndJoin() }
+    }.also { asyncJob = it }.debug { "Started reset job for ride $name. ($hexKey)" }
+
+    @ExperimentalCoroutinesApi
+    fun onRideTaskComplete(block: (EnabledState, EnabledState) -> Unit) {
+        val currentState = synchronized(state) { state }
+        asyncJob?.invokeOnCompletion {
+            synchronized(state) {
+                block(currentState, state)
             }
         }
-        reset()
     }
 
-    /**
-     * Invoke block on ride initialization complete coroutine completion
-     */
-    fun onRideEnableComplete(block: (Throwable?) -> Unit) {
-        asyncInitJob?.invokeOnCompletion(block)
-    }
-
-    /**
-     * Asynchronously initializes the ride.
-     *
-     * This method is used for resource-intensive operations needed to set up the ride, such as loading track data
-     * from external files. By running asynchronously, it ensures that these heavy tasks do not block the main thread,
-     * thereby maintaining optimal performance during the server startup process.
-     */
-    protected open fun initAsync() {}
-
-    /**
-     * Synchronously initializes the ride after asynchronous setup.
-     *
-     * This method is responsible for the core setup of the ride, including adding entities and defining control logic.
-     * It will only be called after [initAsync] has fully completed, ensuring that all asynchronous tasks are finalized
-     * before proceeding with the synchronous setup. This method runs synchronously and is scheduled by the
-     * [GlobalRegionScheduler](io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler), which means it is
-     * executed only after the server startup is complete. This guarantees a safe context for interacting with the server,
-     * such as spawning entities and accessing the world environment.
-     */
+    protected open suspend fun initAsync() {}
     protected abstract fun init()
     protected abstract fun remove()
 
+    open suspend fun updateAsync() {}
     abstract fun update()
-    open fun updateAsync() {}
 }

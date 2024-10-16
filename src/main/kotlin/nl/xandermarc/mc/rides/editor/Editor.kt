@@ -3,7 +3,7 @@ package nl.xandermarc.mc.rides.editor
 import nl.xandermarc.mc.lib.logging.debug
 import org.bukkit.entity.Player
 
-abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int, Tool<T>>) {
+abstract class Editor<T : Editor<T>>(val player: Player, vararg toolMaps: Map<Int, Tool<T>>) {
     protected abstract val instance: T
     private val toolMapList = toolMaps.toList()
     private var loadedTools: Int = 0
@@ -18,8 +18,8 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
     }
 
     private fun unloadTools() {
-        toolMapList[loadedTools].values.forEach {
-                tool -> tool.removeFrom(player)
+        toolMapList[loadedTools].values.forEach { tool ->
+            tool.removeFrom(player)
         }
     }
 
@@ -45,5 +45,6 @@ abstract class Editor<T: Editor<T>>(val player: Player, vararg toolMaps: Map<Int
         unloadTools()
         stop()
     }
+
     protected abstract fun stop()
 }

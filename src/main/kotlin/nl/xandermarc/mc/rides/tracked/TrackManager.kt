@@ -7,7 +7,7 @@ import nl.xandermarc.mc.lib.commands.getString
 import nl.xandermarc.mc.lib.commands.stringArgument
 
 object TrackManager : Command("track") {
-    private val tracks = arrayListOf<Track>()
+    private val tracks = mutableListOf<Track>()
 
     fun exists(trackName: String) = synchronized(tracks) { tracks.any { it.name == trackName } }
     fun get(trackName: String) = synchronized(tracks) { tracks.firstOrNull { it.name == trackName } }

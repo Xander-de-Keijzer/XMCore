@@ -1,4 +1,5 @@
 package nl.xandermarc.mc.rides.entities
 
-class DisplayEntity: RideEntity() {
-}
+import nl.xandermarc.mc.lib.math.Point
+
+class DisplayEntity(position: Point) : RideEntity(position)

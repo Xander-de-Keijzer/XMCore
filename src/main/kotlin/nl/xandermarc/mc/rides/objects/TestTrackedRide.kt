@@ -1,11 +1,10 @@
 package nl.xandermarc.mc.rides.objects
 
-import nl.xandermarc.mc.lib.logging.info
 import nl.xandermarc.mc.rides.tracked.TrackedRide
 import nl.xandermarc.mc.rides.tracked.Train
 
 object TestTrackedRide : TrackedRide("test") { // Define carts sizes models etc
-    override fun initAsync() {
+    override suspend fun initAsync() {
         loadTrack("test_track")
         loadTrack("another_track")
     }

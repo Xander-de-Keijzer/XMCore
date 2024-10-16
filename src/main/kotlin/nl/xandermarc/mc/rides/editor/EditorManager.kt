@@ -1,12 +1,11 @@
 package nl.xandermarc.mc.rides.editor
 
 import org.bukkit.entity.Player
-import org.bukkit.event.inventory.InventoryClickEvent
 import org.bukkit.event.player.PlayerInteractEvent
 
 object EditorManager {
 
-    private val editors: ArrayList<Editor<*>> = arrayListOf()
+    private val editors = mutableListOf<Editor<*>>()
 
     fun registerEditor(editor: Editor<*>) {
         editors.add(editor)

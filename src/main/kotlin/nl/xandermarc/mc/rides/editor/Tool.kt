@@ -7,7 +7,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-class Tool<T : Editor<T>>(
+class Tool<T>(
     private val material: Material,
     val onRightClick: Event<T> = Event(null) {},
     val onLeftClick: Event<T> = Event(null) {},
@@ -20,9 +20,10 @@ class Tool<T : Editor<T>>(
     fun addTo(player: Player, slot: Int) {
         player.inventory.setItem(slot, item)
     }
+
     fun removeFrom(player: Player) = player.inventory.removeAll { it.isItem(uuid) }
 
-    class Event<T : Editor<T>>(val name: String?, private val action: T.() -> Unit) {
+    class Event<T>(val name: String?, private val action: T.() -> Unit) {
         fun invoke(editor: T) = action.invoke(editor)
     }
 }

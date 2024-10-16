@@ -1,29 +1,30 @@
 package nl.xandermarc.mc.rides.tracked
 
-import nl.xandermarc.mc.lib.logging.debug
+import kotlinx.coroutines.ensureActive
 import nl.xandermarc.mc.lib.logging.debugAll
 import nl.xandermarc.mc.lib.logging.info
 import nl.xandermarc.mc.rides.Ride
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.coroutineContext
 
 abstract class TrackedRide(rideName: String) : Ride(rideName) {
     private val nextTrainId = AtomicInteger(1)
-    protected val tracks = arrayListOf<Track>()
+    private val tracks = mutableListOf<Track>()
     val trackList
         get() = tracks.toList()
-    protected val trains = arrayListOf<Train>()
+    private val trains = mutableListOf<Train>()
     val trainList
-        get() = trains.toList()
+        get() = trains
 
-    protected fun loadTrack(
+    protected suspend fun loadTrack(
         trackName: String,
         builder: Track.() -> Unit = {}
     ) {
-        tracks.add(
-            TrackManager.getOrCreate(trackName)
-                .loadOrGenerateSegments()
-                .apply(builder)
-        )
+        coroutineContext.ensureActive()
+        val track = TrackManager.getOrCreate(trackName)
+        if (track.segments.isEmpty()) track.loadOrGenerateSegments()
+        track.apply { builder() }
+        tracks.add(track)
     }
 
     protected fun Track.addTrain(
@@ -55,11 +56,13 @@ abstract class TrackedRide(rideName: String) : Ride(rideName) {
         track(name)?.let { f(it) }
     }
 
+    protected fun Track.segment(id: Int) = segments[id]
+
     override fun update() {
         trains.debugAll { "Sync: $this" }
     }
 
-    override fun updateAsync() {
+    override suspend fun updateAsync() {
         trains.debugAll { "Async: $this" }
     }
 

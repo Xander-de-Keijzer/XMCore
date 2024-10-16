@@ -22,8 +22,9 @@ Creates new user if not exists
  */
 fun userJoined(uuid: UUID, username: String) {
     transaction {
-        val user = User.findById(uuid)?.apply { this.username = username } ?: User.new(uuid) { this.username=username }
-        UserSession.new { this.user=user }
+        val user =
+            User.findById(uuid)?.apply { this.username = username } ?: User.new(uuid) { this.username = username }
+        UserSession.new { this.user = user }
     }
 }
 

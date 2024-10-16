@@ -1,17 +1,12 @@
 package nl.xandermarc.mc.lib.logging
 
-import nl.xandermarc.mc.Main
+import nl.xandermarc.mc.XMCPlugin
 import java.util.logging.Level
-import kotlin.collections.last
-
-//import kotlinx.datetime.Clock
-//import kotlinx.datetime.Instant
-//import kotlinx.datetime.format
 
 private val lambdaRegex = "\\\$lambda\\\$\\d*".toRegex()
 private val jarRegex = ".*\\.jar//".toRegex()
 
-fun trace(): String {
+fun trace(level: Level): String {
     val full = Exception().stackTrace.map {
         it.toString()
     }.first {
@@ -21,25 +16,32 @@ fun trace(): String {
     ).replace(
         jarRegex, ""
     )
-    if (LogSettings.level != LogPriority.DEBUG) return "(" + full.split("(").last()
+    if (level == Level.INFO) return "(" + full.split("(").last()
     return full
 }
 
-fun <T> T.log(priority: LogPriority, message: String): T {//, timestamp: Instant = Clock.System.now()): T {
-    if (LogSettings.shouldLog(priority)) {
-        when(priority) {
-            LogPriority.DEBUG -> Main.instance.logger.log(Level.INFO, "${trace()}: $message")
-            LogPriority.INFO -> Main.instance.logger.log(Level.INFO, "${trace()}: $message")
-            LogPriority.WARN -> Main.instance.logger.log(Level.WARNING, "${trace()}: $message")
-            LogPriority.ERROR -> Main.instance.logger.log(Level.SEVERE, "${trace()}: $message")
+fun shouldLog(level: Level): Boolean {
+    val levelValue = XMCPlugin.settings.logLevel.intValue()
+    val checkValue = level.intValue()
+    return (checkValue >= levelValue)
+}
+
+fun <T> T.log(priority: Level, message: String): T {//, timestamp: Instant = Clock.System.now()): T {
+    if (shouldLog(priority)) {
+        when (priority) {
+            Level.FINE -> XMCPlugin.instance.logger.log(Level.INFO, "${trace(priority)}: $message")
+            Level.INFO -> XMCPlugin.instance.logger.log(Level.INFO, "${trace(priority)}: $message")
+            Level.WARNING -> XMCPlugin.instance.logger.log(Level.WARNING, "${trace(priority)}: $message")
+            Level.SEVERE -> XMCPlugin.instance.logger.log(Level.SEVERE, "${trace(priority)}: $message")
         }
     }
     return this
 }
-fun <T> T.debug(message: String): T = log(LogPriority.DEBUG, message)
-fun <T> T.info(message: String): T = log(LogPriority.INFO, message)
-fun <T> T.warn(message: String): T = log(LogPriority.WARN, message)
-fun <T> T.error(message: String): T = log(LogPriority.ERROR, message)
+
+fun <T> T.debug(message: String): T = log(Level.FINE, message)
+fun <T> T.info(message: String): T = log(Level.INFO, message)
+fun <T> T.warn(message: String): T = log(Level.WARNING, message)
+fun <T> T.error(message: String): T = log(Level.SEVERE, message)
 inline fun <T> T.debug(message: T.() -> String): T = debug(message())
 inline fun <T> T.info(message: T.() -> String): T = info(message())
 inline fun <T> T.warn(message: T.() -> String): T = warn(message())

@@ -1,8 +1,11 @@
 package nl.xandermarc.mc.rides.tracked
 
-import nl.xandermarc.mc.lib.math.Vec
+import kotlinx.serialization.Serializable
+import nl.xandermarc.mc.lib.math.path.BezierPath
 
+@Serializable
 data class TrackSegment(
-    val id: Int,
-    val points: List<Vec>
+    val path: BezierPath,
+    var aConnected: Int? = null,
+    var bConnected: Int? = null,
 )
