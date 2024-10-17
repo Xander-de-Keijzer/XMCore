@@ -24,14 +24,14 @@ object RideManager {
     fun isRegistered(rideName: String) =
         rides.any { it.name == rideName }.debug { "Ride $rideName (registered=$this)" }
 
-    fun isRegistered(ride: Ride) =
+    private fun isRegistered(ride: Ride) =
         rides.contains(ride).debug { "Ride ${ride.name} (registered=$this)" }
 
     fun unregister(rideName: String) {
         rides.find { it.name == rideName }?.let { unregister(it) }
     }
 
-    fun unregister(ride: Ride) {
+    private fun unregister(ride: Ride) {
         if (!isRegistered(ride)) return
         ride.disable()
         rides.remove(ride).info("Unregistered ride ${ride.name} (success=$this)")

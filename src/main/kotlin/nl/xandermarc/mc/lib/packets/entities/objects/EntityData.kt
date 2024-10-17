@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.lib.entities
+package nl.xandermarc.mc.lib.packets.entities.objects
 
 import net.minecraft.network.chat.Component
 import net.minecraft.network.syncher.EntityDataAccessor
@@ -15,6 +15,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmName
 
+@Suppress("unused")
 data object EntityData {
     private fun KClass<*>.member(name: String): KCallable<*> =
         members.firstOrNull { it.name == name } ?: throw NoSuchFieldException("$jvmName.$name")

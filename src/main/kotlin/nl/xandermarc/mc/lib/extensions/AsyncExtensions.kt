@@ -1,8 +1,6 @@
 package nl.xandermarc.mc.lib.extensions
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import nl.xandermarc.mc.XMCPlugin.Companion.readScope
 import nl.xandermarc.mc.XMCPlugin.Companion.writeScope
 import nl.xandermarc.mc.lib.logging.debug
@@ -15,29 +13,47 @@ enum class EnabledState {
     DISABLING
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 val Job.hexKey: String
-    get() = Integer.toHexString(key.hashCode())
+    get() = hashCode().toHexString()
 
-fun launchReadJob(block: suspend CoroutineScope.() -> Unit): Job = readScope
-    .launch(block = block)
-    .also { job ->
+object JobManager {
+    val jobs = hashMapOf<Job, String>()
+}
+
+fun Job?.joinAndLaunchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
+    launchReadJob(name) {
+        val currentJob = this@joinAndLaunchReadJob
+        if (currentJob != null && !currentJob.isCompleted) {
+            yield()
+            debug("Job($name) waiting on previous job ${JobManager.jobs[currentJob]} to complete...")
+            currentJob.join()
+        }
+        yield()
+        block()
+    }
+
+fun CoroutineScope.launchJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
+    debug { "Job($name) is being launched on $this." }.launch(block = block).also { job ->
+        val jobKey = "Job($name)#${job.hexKey}"
+        JobManager.jobs[job] = jobKey
         job.invokeOnCompletion { throwable ->
             when (throwable) {
-                null -> null.debug("Job ${job.hexKey} has been completed successfully.")
-                is CancellationException -> null.debug("Job ${job.hexKey} has been cancelled.")
-                else -> throw throwable.debug { "Job ${job.hexKey} has failed with exception $this" }
+                null -> null.debug("$jobKey has been completed successfully.")
+                is CancellationException -> null.debug("$jobKey has been cancelled.")
+                else -> throw throwable.debug { "$jobKey has failed with exception $this" }
             }
         }
     }
 
-fun launchWriteJob(block: suspend CoroutineScope.() -> Unit): Job = writeScope
-    .launch(block = block)
-    .also { job ->
-        job.invokeOnCompletion { throwable ->
-            when (throwable) {
-                null -> null.debug("Job ${job.hexKey} has been completed successfully.")
-                is CancellationException -> null.debug("Job ${job.hexKey} has been cancelled.")
-                else -> throw throwable.debug { "Job ${job.hexKey} has failed with exception $this" }
-            }
-        }
+fun launchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
+    readScope.launchJob("ReadJob($name)", block)
+
+fun launchWriteJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
+    writeScope.launchJob("WriteJob($name)", block)
+
+fun test() {
+    launchReadJob {
+        //
     }
+}

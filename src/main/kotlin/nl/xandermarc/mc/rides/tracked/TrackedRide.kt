@@ -68,7 +68,7 @@ abstract class TrackedRide(rideName: String) : Ride(rideName) {
 
     override fun remove() {
         info("Removing tracked ride $name...")
-        trains.debugAll { "Removed: $this" }
+        trains.debugAll { "Removed: ${this.id}" }
         nextTrainId.set(1)
         trains.clear()
         tracks.clear()

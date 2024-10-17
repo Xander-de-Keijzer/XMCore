@@ -7,7 +7,7 @@ import org.eclipse.aether.artifact.DefaultArtifact
 import org.eclipse.aether.graph.Dependency
 import java.util.Arrays.asList
 
-@Suppress("UnstableApiUsage")
+@Suppress("UnstableApiUsage", "ReplaceJavaStaticMethodWithKotlinAnalog", "unused")
 class XMCLoader : PluginLoader {
     override fun classloader(pluginClasspathBuilder: PluginClasspathBuilder) {
         val dependencies = asList(

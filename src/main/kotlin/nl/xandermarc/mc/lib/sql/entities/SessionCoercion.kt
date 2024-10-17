@@ -9,7 +9,7 @@ class SessionCoercion(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<SessionCoercion>(SessionCoercions)
 
     var session by UserSession referencedOn SessionCoercions.session
-    val coercedAt by SessionCoercions.coercedAt
+    private val coercedAt by SessionCoercions.coercedAt
     var coercedTo by SessionCoercions.coercedTo
 
     override fun toString() =

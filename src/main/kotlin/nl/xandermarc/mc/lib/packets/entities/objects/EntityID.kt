@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.lib.entities
+package nl.xandermarc.mc.lib.packets.entities.objects
 
 import kotlin.random.Random
 

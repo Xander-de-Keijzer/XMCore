@@ -3,10 +3,9 @@ package nl.xandermarc.mc.rides
 import kotlinx.coroutines.*
 import nl.xandermarc.mc.lib.extensions.EnabledState
 import nl.xandermarc.mc.lib.extensions.hexKey
-import nl.xandermarc.mc.lib.extensions.launchReadJob
+import nl.xandermarc.mc.lib.extensions.joinAndLaunchReadJob
 import nl.xandermarc.mc.lib.logging.debug
 import nl.xandermarc.mc.lib.logging.info
-import kotlin.coroutines.coroutineContext
 
 abstract class Ride(val name: String) {
     private var asyncJob: Job? = null
@@ -16,67 +15,51 @@ abstract class Ride(val name: String) {
             field = value
         }
 
-    private suspend fun joinJob(job: Job?) {
-        coroutineContext.ensureActive()
-        if (job == null || job.isCompleted) return
-        debug("Ride $name waiting on current asynchronous job ($job) to complete...")
-        job.join()
-        coroutineContext.ensureActive()
-    }
-
-    fun enable() = asyncJob.let { currentJob ->
-        launchReadJob {
-            joinJob(currentJob)
-            synchronized(state) {
-                if (state == EnabledState.ENABLED) return@launchReadJob
-                check(state == EnabledState.DISABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
-                state = EnabledState.ENABLING
-            }.info("Ride $name is being enabled.").debug("Initializing ride $name asynchronously...")
-            ensureActive()
-            initAsync().debug("Asynchronous initializing of ride $name finished.")
-            ensureActive()
-            launch(Dispatchers.Default) {
-                debug("Initializing ride $name synchronously...")
-                init().debug("Synchronous initializing of ride $name finished.")
-                synchronized(state) { state = EnabledState.ENABLED }.info("Ride $name has been enabled.")
-            }
+    fun enable() = asyncJob.joinAndLaunchReadJob("ride.enable.$name") {
+        synchronized(state) {
+            if (state == EnabledState.ENABLED) return@joinAndLaunchReadJob
+            check(state == EnabledState.DISABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
+            state = EnabledState.ENABLING
+        }.info("Ride $name is being enabled.").debug("Initializing ride $name asynchronously...")
+        ensureActive()
+        initAsync().debug("Asynchronous initializing of ride $name finished.")
+        ensureActive()
+        launch(Dispatchers.Default) {
+            debug("Initializing ride $name synchronously...")
+            init().debug("Synchronous initializing of ride $name finished.")
+            synchronized(state) { state = EnabledState.ENABLED }.info("Ride $name has been enabled.")
         }
     }.also { asyncJob = it }.debug { "Started enable job for ride $name. ($hexKey)" }
 
-    fun disable() = asyncJob.let { currentJob ->
-        launchReadJob {
-            joinJob(currentJob)
-            synchronized(state) {
-                if (state == EnabledState.DISABLED) return@launchReadJob
-                check(state == EnabledState.ENABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
-                state = EnabledState.DISABLING
-            }
-            info("Ride $name is being disabled...")
-            remove()
-            synchronized(state) { state = EnabledState.DISABLED }
-            info("Ride $name has been disabled.")
+    fun disable() = asyncJob.joinAndLaunchReadJob("ride.disable.$name") {
+        synchronized(state) {
+            if (state == EnabledState.DISABLED) return@joinAndLaunchReadJob
+            check(state == EnabledState.ENABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
+            state = EnabledState.DISABLING
         }
+        info("Ride $name is being disabled...")
+        remove()
+        synchronized(state) { state = EnabledState.DISABLED }
+        info("Ride $name has been disabled.")
     }.also { asyncJob = it }.debug { "Started disable job for ride $name. ($hexKey)" }
 
-    fun reset() = asyncJob.let { currentJob ->
-        launchReadJob {
-            joinJob(currentJob)
-            info("Ride $name is being reset...")
-            synchronized(state) {
-                if (state == EnabledState.ENABLED) {
-                    state = EnabledState.DISABLING.debug("Disabling ride $name...")
-                    remove()
-                    state = EnabledState.DISABLED.debug("Ride $name has been disabled.")
-                }
-                check(state == EnabledState.DISABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
+    fun reset() = asyncJob.joinAndLaunchReadJob("ride.reset.$name") {
+        info("Ride $name is being reset...")
+        synchronized(state) {
+            if (state == EnabledState.ENABLED) {
+                state = EnabledState.DISABLING.debug("Disabling ride $name...")
+                remove()
+                state = EnabledState.DISABLED.debug("Ride $name has been disabled.")
             }
-            ensureActive().debug("Initializing ride $name asynchronously...")
-            initAsync().debug("Asynchronous initializing of ride $name finished.")
-            ensureActive().debug("Initializing ride $name synchronously...")
-            launch(Dispatchers.Default) {
-                init().debug("Synchronous initializing of ride $name finished.")
-                synchronized(state) { state = EnabledState.ENABLED }.info("Ride $name has been enabled.")
-            }
+            check(state == EnabledState.DISABLED) { "Ride $name is in transitioning state with no active job (stuck)." }
+        }
+        ensureActive().debug("Initializing ride $name asynchronously...")
+        initAsync().debug("Asynchronous initializing of ride $name finished.")
+        ensureActive().debug("Initializing ride $name synchronously...")
+        launch(Dispatchers.Default) {
+            init().debug("Synchronous initializing of ride $name finished.")
+            synchronized(state) { state = EnabledState.ENABLED }.debug("Ride $name has been enabled.")
+        }.invokeOnCompletion {
             info("Ride $name has been reset.")
         }
     }.also { asyncJob = it }.debug { "Started reset job for ride $name. ($hexKey)" }

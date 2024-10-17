@@ -11,15 +11,17 @@ abstract class RideEntity(
     val id: Int = nextEntityId.getAndIncrement(),
     val uuid: UUID = UUID.randomUUID()
 ) {
-    companion object { val nextEntityId = AtomicInteger(1) }
-    val children = mutableListOf<RideEntity>()
-
-    var parent: RideEntity? = null
-    var offset: Vector3d? = null
-    var rotation: Quaterniond? = null
-
-    fun move(position: Point) {
+    companion object {
+        val nextEntityId = AtomicInteger(1)
     }
+
+    private val children = mutableListOf<RideEntity>()
+
+    private var parent: RideEntity? = null
+    private var offset: Vector3d? = null
+    private var rotation: Quaterniond? = null
+
+    abstract fun move(position: Point)
 
     fun addChild(child: RideEntity, offset: Vector3d, rotation: Quaterniond) {
         child.parent = this

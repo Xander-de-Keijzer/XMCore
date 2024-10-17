@@ -2,10 +2,12 @@ package nl.xandermarc.mc.rides.tracked
 
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.ItemDisplayContext
-import nl.xandermarc.mc.lib.entities.*
-import nl.xandermarc.mc.lib.entities.packets.AddEntityPacket
-import nl.xandermarc.mc.lib.entities.packets.RemoveEntitiesPacket
-import nl.xandermarc.mc.lib.entities.packets.SetEntityDataPacket
+import nl.xandermarc.mc.lib.packets.create
+import nl.xandermarc.mc.lib.packets.entities.AddEntityPacket
+import nl.xandermarc.mc.lib.packets.entities.RemoveEntitiesPacket
+import nl.xandermarc.mc.lib.packets.entities.SetEntityDataPacket
+import nl.xandermarc.mc.lib.packets.entities.objects.EntityData
+import nl.xandermarc.mc.lib.packets.entities.objects.EntityID
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
@@ -17,18 +19,18 @@ class TrackPreview(private val player: Player) {
     fun show(track: Track) {
         track.nodes.forEach {
             val id = EntityID.next
-            AddEntityPacket(id, EntityType.ITEM_DISPLAY, it.value.location).packet.sendPacket(player)
+            AddEntityPacket(id, EntityType.ITEM_DISPLAY, it.value.location).sendPacket(player)
             SetEntityDataPacket(
                 id,
-                EntityData.ITEM_STACK_ID.create(ItemStack(Material.WHITE_CONCRETE).nms()),
+                EntityData.ITEM_STACK_ID.create(ItemStack(Material.WHITE_CONCRETE)),
                 EntityData.ITEM_DISPLAY_ID.create(ItemDisplayContext.HEAD.id),
-            ).packet.sendPacket(player)
+            ).sendPacket(player)
             entities.add(id)
         }
     }
 
     fun remove() {
-        RemoveEntitiesPacket(*entities.toIntArray()).packet.sendPacket(player)
+        RemoveEntitiesPacket(*entities.toIntArray()).sendPacket(player)
         entities.clear()
     }
 

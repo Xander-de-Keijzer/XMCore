@@ -10,6 +10,9 @@ import org.joml.Vector3f
 fun Double.toRadians() = Math.toRadians(this)
 fun Double.toDegrees() = Math.toDegrees(this)
 
+fun Float.toRadians() = Math.toRadians(this.toDouble()).toFloat()
+fun Float.toDegrees() = Math.toDegrees(this.toDouble()).toFloat()
+
 fun Double.squared() = this * this
 fun Double.cubed() = this * this * this
 

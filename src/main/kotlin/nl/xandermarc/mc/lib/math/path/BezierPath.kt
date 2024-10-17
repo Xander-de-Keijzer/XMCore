@@ -69,8 +69,8 @@ data class BezierPath(
         tValues.clear()
 
         // Precompute positions and cumulative arc lengths
-        val N = steps.coerceAtLeast(1)
-        val tList = (0..N).map { it.toDouble() / N }
+        val n = steps.coerceAtLeast(1)
+        val tList = (0..n).map { it.toDouble() / n }
         val positions = tList.map { evaluate(p0, p1, p2, p3, it) }  // Positions before transformation
         val distances = positions.zipWithNext().map { (p1, p2) -> p1.distance(p2) }
         val cumulativeDistances = mutableListOf(0.0)

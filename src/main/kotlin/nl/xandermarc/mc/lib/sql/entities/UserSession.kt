@@ -9,7 +9,7 @@ class UserSession(id: EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<UserSession>(UserSessions)
 
     var user by User referencedOn UserSessions.user
-    val joinedAt by UserSessions.joinedAt
+    private val joinedAt by UserSessions.joinedAt
     var quitAt by UserSessions.quitAt
 
     override fun toString() = "UserSession(id=${id.value}, user=${user.id.value}, joined=$joinedAt, quit=$quitAt)"

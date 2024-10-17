@@ -5,6 +5,7 @@ import com.mojang.brigadier.tree.LiteralCommandNode
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands.literal
 
+@Suppress("UnstableApiUsage")
 abstract class Command(val name: String) {
     protected val root: LiteralArgumentBuilder<CommandSourceStack> = literal(name)
     protected abstract val command: LiteralArgumentBuilder<CommandSourceStack>

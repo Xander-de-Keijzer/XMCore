@@ -27,18 +27,18 @@ data class Track(
     fun getSegmentId(segment: TrackSegment) = segments.filterValues { it == segment }.keys.firstOrNull()
 
     // TODO
-    fun canLoadSegments(): Boolean {
+    private fun canLoadSegments(): Boolean {
         return false
     }
 
     // TODO
-    suspend fun loadSegments() {
+    private suspend fun loadSegments() {
         debug("Loading segments of track $name")
         coroutineContext.ensureActive()
     }
 
     // TODO
-    suspend fun generateSegments() {
+    private suspend fun generateSegments() {
         debug("Generating segments of track $name")
         for (i in (1..10)) {
             coroutineContext.ensureActive()

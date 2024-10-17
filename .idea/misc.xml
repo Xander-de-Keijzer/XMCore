@@ -1,5 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData AIR_SUPPLY_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData BACKGROUND_COLOR_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData BILLBOARD_RENDER_CONSTRAINTS_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData BLOCK_STATE_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData BRIGHTNESS_OVERRIDE_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData CUSTOM_NAME" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData CUSTOM_NAME_VISIBLE" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData GLOW_COLOR_OVERRIDE_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData HEIGHT_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData LEFT_ROTATION_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData LINE_WIDTH_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData NO_GRAVITY" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData POS_ROT_INTERPOLATION_DURATION_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData POSE" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData RIGHT_ROTATION_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData SCALE_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData SHADOW_RADIUS_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData SHADOW_STRENGTH_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData SHARED_FLAGS_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData SILENT" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData STYLE_FLAGS_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData TEXT_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData TEXT_OPACITY_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData TICKS_FROZEN" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData TRANSFORMATION_INTERPOLATION_DURATION_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData TRANSFORMATION_INTERPOLATION_START_DELTA_TICKS_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData TRANSLATION_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData VIEW_RANGE_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.packets.entities.objects.EntityData WIDTH_ID" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.pdc.ItemKeys XMC_ITEM$delegate" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.pdc.ItemKeys XMC_ITEM_UUID_HIGH$delegate" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.pdc.ItemKeys XMC_ITEM_UUID_LOW$delegate" />
+      <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.logging.LevelSerializer descriptor" />
+    </entry_points>
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" />
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="handleClick" />
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="isUsingEditor" />
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="registerEditor" />
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="stopEditor" />
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="stopEditors" />
+    <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="unregisterEditor" />
+    <pattern value="nl.xandermarc.mc.lib.packets.entities.objects.EntityData" />
+    <pattern value="nl.xandermarc.mc.lib.packets.entities.objects.EntityID" />
+    <pattern value="nl.xandermarc.mc.lib.packets.entities.objects.EntityID" method="getNextSerial" />
+    <pattern value="nl.xandermarc.mc.lib.pdc.ItemKeys" />
+    <pattern value="nl.xandermarc.mc.lib.pdc.ItemKeys.LazyKey" />
+    <pattern value="nl.xandermarc.mc.lib.pdc.ItemKeys.LazyKey" method="LazyKey" />
+    <pattern value="nl.xandermarc.mc.lib.logging.LevelSerializer" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" method="getRideNames" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" method="isRegistered" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" method="register" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" method="unregister" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" method="update" />
+    <pattern value="nl.xandermarc.mc.rides.RideManager" method="updateAsync" />
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$" />

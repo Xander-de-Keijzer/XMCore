@@ -19,7 +19,7 @@ class TrackEditor(player: Player, private val track: Track) : Editor<TrackEditor
     )
 ) {
     override val instance = this
-    override fun stop() {
+    override fun stop(): Unit =
         // TODO Stop editor
-    }
+        Unit
 }
