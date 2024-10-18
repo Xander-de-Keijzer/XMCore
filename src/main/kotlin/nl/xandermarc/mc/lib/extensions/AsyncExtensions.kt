@@ -1,17 +1,11 @@
 package nl.xandermarc.mc.lib.extensions
 
-import kotlinx.coroutines.*
-import nl.xandermarc.mc.XMCPlugin.Companion.readScope
-import nl.xandermarc.mc.XMCPlugin.Companion.writeScope
-import nl.xandermarc.mc.lib.logging.debug
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
+import nl.xandermarc.mc.lib.XMC
 import kotlin.coroutines.cancellation.CancellationException
-
-enum class EnabledState {
-    DISABLED,
-    ENABLING,
-    ENABLED,
-    DISABLING
-}
 
 @OptIn(ExperimentalStdlibApi::class)
 val Job.hexKey: String
@@ -22,7 +16,7 @@ object JobManager {
 }
 
 fun Job?.joinAndLaunchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
-    launchReadJob(name) {
+    XMC.launchReadJob(name) {
         val currentJob = this@joinAndLaunchReadJob
         if (currentJob != null && !currentJob.isCompleted) {
             yield()
@@ -46,14 +40,4 @@ fun CoroutineScope.launchJob(name: String = "Unknown", block: suspend CoroutineS
         }
     }
 
-fun launchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
-    readScope.launchJob("ReadJob($name)", block)
 
-fun launchWriteJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
-    writeScope.launchJob("WriteJob($name)", block)
-
-fun test() {
-    launchReadJob {
-        //
-    }
-}

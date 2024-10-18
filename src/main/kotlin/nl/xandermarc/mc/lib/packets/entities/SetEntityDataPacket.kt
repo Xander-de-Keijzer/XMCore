@@ -2,8 +2,8 @@ package nl.xandermarc.mc.lib.packets.entities
 
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.syncher.SynchedEntityData
+import nl.xandermarc.mc.lib.extensions.build
 import nl.xandermarc.mc.lib.packets.AbstractPacket
-import nl.xandermarc.mc.lib.packets.build
 
 class SetEntityDataPacket(
     id: Int,

@@ -1,8 +1,8 @@
 package nl.xandermarc.mc.lib.packets.entities
 
 import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket
+import nl.xandermarc.mc.lib.extensions.build
 import nl.xandermarc.mc.lib.packets.AbstractPacket
-import nl.xandermarc.mc.lib.packets.build
 import org.joml.Vector3d
 
 class MoveEntityPacket(

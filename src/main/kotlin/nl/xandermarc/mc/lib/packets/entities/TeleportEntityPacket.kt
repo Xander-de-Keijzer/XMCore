@@ -1,9 +1,9 @@
 package nl.xandermarc.mc.lib.packets.entities
 
 import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket
+import nl.xandermarc.mc.lib.extensions.build
+import nl.xandermarc.mc.lib.extensions.writeVector3d
 import nl.xandermarc.mc.lib.packets.AbstractPacket
-import nl.xandermarc.mc.lib.packets.build
-import nl.xandermarc.mc.lib.packets.writeVector3d
 import org.joml.Vector3d
 import kotlin.math.floor
 

@@ -2,6 +2,7 @@ package nl.xandermarc.mc.lib.packets
 
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
+import nl.xandermarc.mc.lib.extensions.sendPacket
 import org.bukkit.entity.Player
 
 abstract class AbstractPacket<T : Packet<ClientGamePacketListener>>(

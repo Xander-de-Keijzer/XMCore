@@ -2,10 +2,10 @@ package nl.xandermarc.mc.lib.packets.entities
 
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.world.entity.EntityType
+import nl.xandermarc.mc.lib.extensions.build
+import nl.xandermarc.mc.lib.extensions.writeEntityType
+import nl.xandermarc.mc.lib.extensions.writeVector3d
 import nl.xandermarc.mc.lib.packets.AbstractPacket
-import nl.xandermarc.mc.lib.packets.build
-import nl.xandermarc.mc.lib.packets.writeEntityType
-import nl.xandermarc.mc.lib.packets.writeVector3d
 import org.joml.Vector3d
 import java.lang.Math.clamp
 import java.util.*
