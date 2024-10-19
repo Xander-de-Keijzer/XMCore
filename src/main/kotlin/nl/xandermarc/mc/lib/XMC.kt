@@ -26,6 +26,7 @@ object XMC {
     val fallbackLocation: Location get() = Location(world, 0.0, 0.0, 0.0)
 
     // Coroutines
+    val jobs = hashMapOf<Job, String>()
     private val writeJob = SupervisorJob()
     private val readJob = SupervisorJob()
     private val writeScope = CoroutineScope(Dispatchers.IO + writeJob)

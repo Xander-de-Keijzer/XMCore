@@ -14,8 +14,6 @@ import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerPlayerConnection
 import net.minecraft.world.entity.EntityType
-import nl.xandermarc.mc.lib.packets.AbstractPacket
-import nl.xandermarc.mc.lib.packets.BundlePacket
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
@@ -31,12 +29,6 @@ val Player.connection: ServerPlayerConnection
 
 fun Player.sendPacket(packet: Packet<in ClientGamePacketListener>) =
     connection.send(packet)
-
-fun Iterable<AbstractPacket<*>>.sendPacket(player: Player) =
-    BundlePacket(this).sendPacket(player)
-
-fun Iterable<AbstractPacket<*>>.sendPacket(players: Iterable<Player>) =
-    BundlePacket(this).sendPacket(players)
 
 val ItemStack.handle: net.minecraft.world.item.ItemStack
     get() = (this as CraftItemStack).handle
@@ -60,6 +52,3 @@ fun FriendlyByteBuf.writeVector3d(vector3d: Vector3d): FriendlyByteBuf =
 
 fun <T : Any> EntityDataAccessor<T>.create(value: T): SynchedEntityData.DataValue<T> =
     SynchedEntityData.DataValue.create(this, value)
-
-fun EntityDataAccessor<net.minecraft.world.item.ItemStack>.create(value: ItemStack): SynchedEntityData.DataValue<net.minecraft.world.item.ItemStack> =
-    SynchedEntityData.DataValue.create(this, value.handle)

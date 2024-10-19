@@ -1,9 +1,9 @@
 package nl.xandermarc.mc.ride.tracked
 
 import nl.xandermarc.mc.lib.extensions.toVector3d
-import nl.xandermarc.mc.ride.tracked.track.Node
 import nl.xandermarc.mc.ride.editor.Editor
 import nl.xandermarc.mc.ride.editor.Tool
+import nl.xandermarc.mc.ride.tracked.track.Node
 import nl.xandermarc.mc.ride.tracked.track.Track
 import org.bukkit.Material
 import org.bukkit.entity.Player

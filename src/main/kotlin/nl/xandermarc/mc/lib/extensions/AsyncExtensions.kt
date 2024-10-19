@@ -8,19 +8,14 @@ import nl.xandermarc.mc.lib.XMC
 import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalStdlibApi::class)
-val Job.hexKey: String
-    get() = hashCode().toHexString()
-
-object JobManager {
-    val jobs = hashMapOf<Job, String>()
-}
+val Job.hexKey: String get() = hashCode().toHexString()
 
 fun Job?.joinAndLaunchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
     XMC.launchReadJob(name) {
         val currentJob = this@joinAndLaunchReadJob
         if (currentJob != null && !currentJob.isCompleted) {
             yield()
-            debug("Job($name) waiting on previous job ${JobManager.jobs[currentJob]} to complete...")
+            debug("Job($name) waiting on previous job ${XMC.jobs[currentJob]} to complete...")
             currentJob.join()
         }
         yield()
@@ -30,7 +25,7 @@ fun Job?.joinAndLaunchReadJob(name: String = "Unknown", block: suspend Coroutine
 fun CoroutineScope.launchJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
     debug { "Job($name) is being launched on $this." }.launch(block = block).also { job ->
         val jobKey = "Job($name)#${job.hexKey}"
-        JobManager.jobs[job] = jobKey
+        XMC.jobs[job] = jobKey
         job.invokeOnCompletion { throwable ->
             when (throwable) {
                 null -> null.debug("$jobKey has been completed successfully.")

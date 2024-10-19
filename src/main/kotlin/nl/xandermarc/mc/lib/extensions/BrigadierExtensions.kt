@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 package nl.xandermarc.mc.lib.extensions
 
 import com.mojang.brigadier.arguments.*

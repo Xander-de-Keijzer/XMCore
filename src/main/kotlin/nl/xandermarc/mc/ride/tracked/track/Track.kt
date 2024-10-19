@@ -46,7 +46,7 @@ data class Track(
                 Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
                 Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
                 Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0))
-            ).apply { generateTValues() })
+            )).apply { generateTValues() }
             debug("Generated segment $i of track $name")
         }
     }

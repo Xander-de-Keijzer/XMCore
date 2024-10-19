@@ -1,6 +1,5 @@
 package nl.xandermarc.mc.lib.path
 
-import org.joml.Quaterniond
 import org.joml.Vector3d
 
 class MultiPath(
@@ -11,8 +10,8 @@ class MultiPath(
         return paths[totalT.toInt()].positionAt(totalT % 1)
     }
 
-    override fun getRotationAt(t: Double): Quaterniond {
+    override fun getForwardAt(t: Double): Vector3d {
         val totalT = (t * paths.size)
-        return paths[totalT.toInt()].rotationAt(totalT % 1)
+        return paths[totalT.toInt()].forwardAt(totalT % 1)
     }
 }

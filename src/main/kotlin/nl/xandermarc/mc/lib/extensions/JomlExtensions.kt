@@ -25,7 +25,7 @@ fun Location.toVector3d() = Vector3d(x, y, z)
 fun Location.toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 
 fun Vector3f.toVector3d() = Vector3d(this)
-fun Vector3d.toVector3f() = Vector3f(this.x.toFloat(), this.y.toFloat(), this.z.toFloat())
+fun Vector3d.toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 
 fun Quaternionf.toQuaterniond() = Quaterniond(this)
 fun Quaterniond.toQuaternionf() = Quaternionf(this)
