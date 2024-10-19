@@ -40,7 +40,7 @@ data class BezierPath(
         return term0.add(term1).add(term2)
     }
 
-    fun length(): Double {
+    override fun length(): Double {
         return p0.distance(p1) + p1.distance(p2) + p2.distance(p3)
     }
 }

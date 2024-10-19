@@ -14,4 +14,6 @@ class MultiPath(
         val totalT = (t * paths.size)
         return paths[totalT.toInt()].forwardAt(totalT % 1)
     }
+
+    override fun length(): Double = paths.sumOf { it.length() }
 }

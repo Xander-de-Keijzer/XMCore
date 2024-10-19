@@ -10,5 +10,6 @@ class LinearPath(
         start.lerp(end, t)
 
     override fun getForwardAt(t: Double): Vector3d = end.sub(start).normalize()
-}
 
+    override fun length(): Double = start.distance(end)
+}
