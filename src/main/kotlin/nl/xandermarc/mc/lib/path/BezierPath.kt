@@ -16,10 +16,10 @@ data class BezierPath(
     val p2: Vector3d = Vector3d(),
     @Serializable(with = Vector3dSerializer::class)
     val p3: Vector3d = Vector3d(),
-
 ) : Path() {
     override fun getPositionAt(t: Double): Vector3d  = evaluate(p0, p1, p2, p3, t)
     override fun getForwardAt(t: Double): Vector3d = derivative(p0, p1, p2, p3, t).normalize()
+    override fun length(): Double = p0.distance(p1) + p1.distance(p2) + p2.distance(p3)
 
     private fun evaluate(p0: Vector3d, p1: Vector3d, p2: Vector3d, p3: Vector3d, t: Double): Vector3d {
         val u = 1.0 - t
@@ -38,9 +38,5 @@ data class BezierPath(
         val term2 = p3.sub(p2, Vector3d()).mul(3.0 * t.squared())        // 3 * t^2 * (P3 - P2)
 
         return term0.add(term1).add(term2)
-    }
-
-    override fun length(): Double {
-        return p0.distance(p1) + p1.distance(p2) + p2.distance(p3)
     }
 }

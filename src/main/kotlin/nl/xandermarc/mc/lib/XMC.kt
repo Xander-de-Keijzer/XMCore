@@ -1,6 +1,7 @@
 package nl.xandermarc.mc.lib
 
 import kotlinx.coroutines.*
+import nl.xandermarc.mc.core.protocol.Listener
 import nl.xandermarc.mc.lib.extensions.error
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.extensions.launchJob
@@ -14,6 +15,7 @@ import java.util.logging.Logger
 object XMC {
     lateinit var instance: JavaPlugin
         private set
+    lateinit var listener: Listener
 
     const val defaultWorld = "world"
     const val asyncWriteTimeout = 20000L
@@ -36,6 +38,8 @@ object XMC {
         instance = plugin
         logger.parent = plugin.logger
     }
+
+    fun enable() { listener = Listener(instance) }
 
     fun launchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
         readScope.launchJob("ReadJob($name)", block)

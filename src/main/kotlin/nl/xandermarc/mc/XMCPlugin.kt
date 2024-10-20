@@ -12,6 +12,7 @@ class XMCPlugin : JavaPlugin() {
     init { XMC.init(this) }
 
     override fun onEnable() {
+        XMC.enable()
         TestTrackedRide.enable()
         TrackCommand.register()
         logger.info("${pluginMeta.displayName} has been enabled.")
