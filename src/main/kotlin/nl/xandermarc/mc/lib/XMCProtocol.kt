@@ -2,6 +2,8 @@ package nl.xandermarc.mc.lib
 
 import io.netty.channel.*
 import net.minecraft.network.Connection
+import net.minecraft.network.protocol.Packet
+import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.server.MinecraftServer
 import nl.xandermarc.mc.lib.extensions.handle
 import org.bukkit.entity.Player
@@ -10,7 +12,6 @@ import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerLoginEvent
-import org.bukkit.plugin.Plugin
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.logging.Level
@@ -49,8 +50,14 @@ object XMCProtocol {
 
     fun isClosed(): Boolean = closed.get()
 
-    private fun onPacketReceiveAsync(sender: Player, packet: Any): Any? {
-        logger.severe("$sender")
+    private fun onPacketReceiveAsync(sender: Player, packet: Packet<*>): Packet<*>? {
+        logger.severe("$packet")
+        when(packet) {
+            is ServerboundMovePlayerPacket -> {
+                logger.severe("${packet.x} ${packet.y} ${packet.z}")
+            }
+            else -> { logger.severe(packet.toString()) }
+        }
         return packet
     }
 
@@ -148,7 +155,7 @@ object XMCProtocol {
                 super.channelRead(ctx, packet)
                 return
             }
-            val newPacket = onPacketReceiveAsync(player, packet) ?: return
+            val newPacket = onPacketReceiveAsync(player, packet as Packet<*>) ?: return
             super.channelRead(ctx, newPacket)
         }
     }
