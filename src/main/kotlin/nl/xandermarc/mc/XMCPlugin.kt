@@ -9,10 +9,12 @@ import org.bukkit.plugin.java.JavaPlugin
 @Suppress("UnstableApiUsage")
 class XMCPlugin : JavaPlugin() {
 
-    init { XMC.init(this) }
+    override fun onLoad() {
+        XMC.onLoad(this)
+    }
 
     override fun onEnable() {
-        XMC.enable()
+        XMC.onEnable()
         TestTrackedRide.enable()
         TrackCommand.register()
         logger.info("${pluginMeta.displayName} has been enabled.")
@@ -20,7 +22,7 @@ class XMCPlugin : JavaPlugin() {
 
     override fun onDisable() {
         RideManager.disable()
-        XMC.completeJobs()
+        XMC.onDisable()
         logger.info("${pluginMeta.displayName} has been disabled.")
     }
 

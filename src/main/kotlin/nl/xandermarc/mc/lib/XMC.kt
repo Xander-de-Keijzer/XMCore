@@ -1,7 +1,6 @@
 package nl.xandermarc.mc.lib
 
 import kotlinx.coroutines.*
-import nl.xandermarc.mc.core.protocol.Listener
 import nl.xandermarc.mc.lib.extensions.error
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.extensions.launchJob
@@ -15,16 +14,15 @@ import java.util.logging.Logger
 object XMC {
     lateinit var instance: JavaPlugin
         private set
-    lateinit var listener: Listener
 
-    const val defaultWorld = "world"
-    const val asyncWriteTimeout = 20000L
-    const val asyncReadTimeout = 5000L
-    const val asyncCancelTimeout = 3000L
+    private const val DEFAULT_WORLD = "world"
+    private const val ASYNC_WRITE_TIMEOUT = 20000L
+    private const val ASYNC_READ_TIMEOUT = 5000L
+    private const val ASYNC_CANCEL_TIMEOUT = 3000L
 
     val logger: Logger = Logger.getLogger("XMC")
     val server: Server get() = instance.server
-    val world: World get() = server.getWorld(defaultWorld) ?: server.worlds.first()
+    val world: World get() = server.getWorld(DEFAULT_WORLD) ?: server.worlds.first()
     val fallbackLocation: Location get() = Location(world, 0.0, 0.0, 0.0)
 
     // Coroutines
@@ -34,12 +32,12 @@ object XMC {
     private val writeScope = CoroutineScope(Dispatchers.IO + writeJob)
     private val readScope = CoroutineScope(Dispatchers.IO + readJob)
 
-    fun init(plugin: JavaPlugin) {
-        instance = plugin
-        logger.parent = plugin.logger
+    fun onLoad(plugin: JavaPlugin) { instance = plugin }
+    fun onEnable() { XMCProtocol.enable() }
+    fun onDisable() {
+        XMCProtocol.close()
+        completeJobs()
     }
-
-    fun enable() { listener = Listener(instance) }
 
     fun launchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
         readScope.launchJob("ReadJob($name)", block)
@@ -47,9 +45,9 @@ object XMC {
     fun launchWriteJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
         writeScope.launchJob("WriteJob($name)", block)
 
-    fun completeJobs() {
-        if (writeJob.children.any { it.isActive }) completeJobs(writeJob, "Writing", asyncWriteTimeout)
-        if (readJob.children.any { it.isActive }) completeJobs(readJob, "Reading", asyncReadTimeout)
+    private fun completeJobs() {
+        if (writeJob.children.any { it.isActive }) completeJobs(writeJob, "Writing", ASYNC_WRITE_TIMEOUT)
+        if (readJob.children.any { it.isActive }) completeJobs(readJob, "Reading", ASYNC_READ_TIMEOUT)
         writeJob.cancel()
         readJob.cancel()
     }
@@ -63,14 +61,14 @@ object XMC {
                     job.children.forEach { it.join() }
                 }
             } catch (_: TimeoutCancellationException) {
-                warn("Some asynchronous $lowerName jobs did not complete within the timeout, waiting $asyncCancelTimeout ms for them to cancel.")
+                warn("Some asynchronous $lowerName jobs did not complete within the timeout, waiting $ASYNC_CANCEL_TIMEOUT ms for them to cancel.")
                 job.children.forEach { childJob ->
                     try {
-                        withTimeout(asyncCancelTimeout) {
+                        withTimeout(ASYNC_CANCEL_TIMEOUT) {
                             childJob.cancelAndJoin()
                         }
                     } catch (_: TimeoutCancellationException) {
-                        error("$name job $childJob failed to cancel within $asyncCancelTimeout ms.")
+                        error("$name job $childJob failed to cancel within $ASYNC_CANCEL_TIMEOUT ms.")
                     }
                 }
             } finally {

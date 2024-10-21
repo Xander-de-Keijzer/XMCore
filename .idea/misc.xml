@@ -36,6 +36,9 @@
       <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.pdc.ItemKeys XMC_ITEM_UUID_LOW$delegate" />
       <entry_point TYPE="field" FQNAME="nl.xandermarc.mc.lib.logging.LevelSerializer descriptor" />
     </entry_points>
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="org.bukkit.event.EventHandler" />
+    </list>
     <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" />
     <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="handleClick" />
     <pattern value="nl.xandermarc.mc.rides.editor.EditorManager" method="isUsingEditor" />

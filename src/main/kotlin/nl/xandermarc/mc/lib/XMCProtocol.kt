@@ -1,0 +1,155 @@
+package nl.xandermarc.mc.lib
+
+import io.netty.channel.*
+import net.minecraft.network.Connection
+import net.minecraft.server.MinecraftServer
+import nl.xandermarc.mc.lib.extensions.handle
+import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerLoginEvent
+import org.bukkit.plugin.Plugin
+import java.util.*
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.logging.Level
+import java.util.logging.Logger
+import kotlin.concurrent.Volatile
+
+object XMCProtocol {
+    private const val IDENTIFIER: String = "XMCProtocol"
+    private val serverConnection = MinecraftServer.getServer().connection
+    private val closed = AtomicBoolean(false)
+    private val playerCache: MutableMap<UUID, Player> = Collections.synchronizedMap(HashMap())
+    private val injectedChannels: MutableSet<Channel> = Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
+    private val logger = Logger.getLogger(XMCProtocol::class.simpleName)
+
+    fun enable() {
+        logger.level = Level.SEVERE
+        XMC.server.pluginManager.registerEvents(EventListener, XMC.instance)
+        XMC.server.onlinePlayers.forEach { injectPlayer(it) }
+    }
+
+    fun close() {
+        if (closed.getAndSet(true)) return
+        EventListener.unregister()
+        synchronized(serverConnection) {
+            injectedChannels.forEach {
+                try {
+                    it.eventLoop().submit { it.pipeline().remove(IDENTIFIER) }
+                } catch (exception: Exception) {
+                    logger.log(Level.SEVERE, "[XMCProtocol] Error while trying to uninject player", exception)
+                }
+            }
+        }
+        playerCache.clear()
+        injectedChannels.clear()
+    }
+
+    fun isClosed(): Boolean = closed.get()
+
+    private fun onPacketReceiveAsync(sender: Player, packet: Any): Any? {
+        logger.severe("$sender")
+        return packet
+    }
+
+    private fun injectPlayer(player: Player) {
+        val channel: Channel = player.handle.connection.connection.channel
+        injectChannel(channel).player = player
+    }
+
+    private fun injectChannel(channel: Channel): PacketHandler {
+        val handler = PacketHandler()
+        channel.eventLoop().submit {
+            if (!isClosed() && injectedChannels.add(channel)) {
+                try {
+                    channel.pipeline().addBefore("packet_handler", IDENTIFIER, handler)
+                } catch (ignored: IllegalArgumentException) {
+                    logger.warning("[XMCProtocol] Handler with identifier '$IDENTIFIER' already present.")
+                } catch (e: Exception) {
+                    logger.log(Level.WARNING, "[XMCProtocol] An unknown exception occurred during channel injection.", e)
+                }
+            }
+        }
+        return handler
+    }
+
+    private fun injectNetworkManager(networkManager: Connection) {
+        val channel = networkManager.channel
+        if (!injectedChannels.contains(channel)) {
+            injectChannel(channel)
+        }
+    }
+
+    private fun getPendingNetworkManagers(): Queue<Connection?>? {
+        return try {
+            val pendingField = serverConnection::class.java.getDeclaredField("pending").apply { isAccessible = true }
+            @Suppress("UNCHECKED_CAST")
+            pendingField.get(serverConnection) as Queue<Connection?>
+        } catch (e: Exception) {
+            logger.log(Level.SEVERE, "An exception occured during retrieval of pending server connections.", e)
+            return null
+        }
+    }
+
+    private object EventListener : Listener {
+        @EventHandler
+        fun onAsyncPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent?) {
+            if (isClosed()) return
+            synchronized(serverConnection) {
+                getPendingNetworkManagers()?.let { pending ->
+                    synchronized(pending) {
+                        pending.filterNotNull().forEach { injectNetworkManager(it) }
+                    }
+                }
+            }
+        }
+
+        @EventHandler
+        fun onPlayerLoginEvent(event: PlayerLoginEvent) {
+            if (isClosed()) return
+            playerCache[event.player.uniqueId] = event.player
+        }
+
+        @EventHandler
+        fun onPlayerJoinEvent(event: PlayerJoinEvent) {
+            if (isClosed()) return
+            val player = event.player
+            val channel: Channel = player.handle.connection.connection.channel
+            val channelHandler = channel.pipeline()[IDENTIFIER]
+            if (channelHandler is PacketHandler) {
+                channelHandler.player = player
+                playerCache.remove(player.uniqueId)
+            } else {
+                injectChannel(channel).player = player
+            }
+        }
+
+        fun unregister() {
+            AsyncPlayerPreLoginEvent.getHandlerList().unregister(this)
+            PlayerLoginEvent.getHandlerList().unregister(this)
+            PlayerJoinEvent.getHandlerList().unregister(this)
+        }
+    }
+
+    private class PacketHandler : ChannelDuplexHandler() {
+        @Volatile
+        var player: Player? = null
+
+        override fun channelUnregistered(ctx: ChannelHandlerContext) {
+            injectedChannels.remove(ctx.channel())
+            super.channelUnregistered(ctx)
+        }
+
+        override fun channelRead(ctx: ChannelHandlerContext, packet: Any) {
+            val player = player
+            if (player == null) {
+                super.channelRead(ctx, packet)
+                return
+            }
+            val newPacket = onPacketReceiveAsync(player, packet) ?: return
+            super.channelRead(ctx, newPacket)
+        }
+    }
+}
