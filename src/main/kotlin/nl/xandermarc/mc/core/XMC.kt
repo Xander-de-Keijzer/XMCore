@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.lib
+package nl.xandermarc.mc.core
 
 import kotlinx.coroutines.*
 import nl.xandermarc.mc.lib.extensions.error
@@ -33,11 +33,8 @@ object XMC {
     private val readScope = CoroutineScope(Dispatchers.IO + readJob)
 
     fun onLoad(plugin: JavaPlugin) { instance = plugin }
-    fun onEnable() { XMCProtocol.enable() }
-    fun onDisable() {
-        XMCProtocol.close()
-        completeJobs()
-    }
+    fun enable() {}
+    fun disable() { completeJobs() }
 
     fun launchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =
         readScope.launchJob("ReadJob($name)", block)

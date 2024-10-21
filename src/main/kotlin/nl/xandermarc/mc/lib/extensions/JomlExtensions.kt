@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.lib.extensions
 
-import nl.xandermarc.mc.lib.XMC
+import nl.xandermarc.mc.core.XMC
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector

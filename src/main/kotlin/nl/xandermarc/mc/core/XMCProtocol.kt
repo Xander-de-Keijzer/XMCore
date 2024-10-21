@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.lib
+package nl.xandermarc.mc.core
 
 import io.netty.channel.*
 import net.minecraft.network.Connection

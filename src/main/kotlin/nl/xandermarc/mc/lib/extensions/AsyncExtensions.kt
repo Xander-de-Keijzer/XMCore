@@ -4,7 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
-import nl.xandermarc.mc.lib.XMC
+import nl.xandermarc.mc.core.XMC
 import kotlin.coroutines.cancellation.CancellationException
 
 @OptIn(ExperimentalStdlibApi::class)

@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.lib.data
 
-import nl.xandermarc.mc.lib.XMC
+import nl.xandermarc.mc.core.XMC
 import org.bukkit.NamespacedKey
 
 object Keys {

@@ -4,7 +4,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import nl.xandermarc.mc.lib.XMC
+import nl.xandermarc.mc.core.XMC
 
 @Suppress("UnstableApiUsage")
 abstract class Command(val name: String) {

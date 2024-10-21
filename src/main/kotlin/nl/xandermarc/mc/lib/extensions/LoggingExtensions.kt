@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.lib.extensions
 
-import nl.xandermarc.mc.lib.XMC
+import nl.xandermarc.mc.core.XMC
 import java.util.logging.Level
 
 fun <T> T.log(level: Level, message: String): T {
