@@ -32,8 +32,7 @@ object XMC {
     private val writeScope = CoroutineScope(Dispatchers.IO + writeJob)
     private val readScope = CoroutineScope(Dispatchers.IO + readJob)
 
-    fun onLoad(plugin: JavaPlugin) { instance = plugin }
-    fun enable() {}
+    fun enable(plugin: JavaPlugin) { instance = plugin }
     fun disable() { completeJobs() }
 
     fun launchReadJob(name: String = "Unknown", block: suspend CoroutineScope.() -> Unit): Job =

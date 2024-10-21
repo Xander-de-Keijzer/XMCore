@@ -57,10 +57,6 @@ tasks.jar {
     from(includeInJar.map { if (it.isDirectory) it else zipTree(it) })
 }
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
-
 kotlin {
     jvmToolchain(21)
 }
