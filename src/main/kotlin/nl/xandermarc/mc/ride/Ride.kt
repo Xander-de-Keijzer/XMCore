@@ -24,7 +24,7 @@ abstract class Ride(val name: String) {
         }.info("Ride $name is being enabled.")
         debug("Initializing ride $name asynchronously...")
 
-        initAsync()
+        load()
         debug("Asynchronous initializing of ride $name finished.")
         yield()
 
@@ -66,7 +66,7 @@ abstract class Ride(val name: String) {
         }
 
         debug("Initializing ride $name asynchronously...")
-        initAsync().
+        load().
         debug("Asynchronous initializing of ride $name finished.")
         yield()
 
@@ -100,7 +100,7 @@ abstract class Ride(val name: String) {
         DISABLING
     }
 
-    protected open suspend fun initAsync() {}
+    protected open suspend fun load() {}
     protected abstract fun init()
     protected abstract fun remove()
 

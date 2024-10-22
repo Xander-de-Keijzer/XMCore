@@ -19,7 +19,7 @@ abstract class Editor<T : Editor<T>>(val player: Player, vararg toolMaps: Map<In
 
     private fun unloadTools() {
         toolMapList[loadedTools].values.forEach { tool ->
-            tool.removeFrom(player)
+            player.inventory.removeAll { tool == it }
         }
     }
 

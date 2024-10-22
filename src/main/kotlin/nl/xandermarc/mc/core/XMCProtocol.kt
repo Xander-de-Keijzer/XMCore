@@ -36,7 +36,7 @@ object XMCProtocol {
         XMC.server.onlinePlayers.forEach { getOrCreateHandler(it.channel).player = it }
     }
 
-    fun close() {
+    fun disable() {
         if (closed.getAndSet(true)) return
         EventListener.unregister()
         synchronized(serverConnection) {

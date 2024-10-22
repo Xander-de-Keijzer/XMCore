@@ -10,5 +10,6 @@ data class Node(
     val location: Vector3d,
     @Serializable(with = Vector3dSerializer::class)
     val rotation: Vector3d = Vector3d(),
-    var radius: Double = 3.0
+    var radius: Double = 3.0,
+    val connections: ArrayList<Int> = arrayListOf()
 )

@@ -34,5 +34,6 @@ fun ItemStack.getUUID() = UUID(
 fun ItemStack.compare(other: Any?): Boolean {
     if (this === other) return true
     if (other !is ItemStack) return false
-    return isItem() && other.isItem() && getUUID() == other.getUUID()
+    if (!isItem() || !other.isItem()) return false
+    return getUUID() == other.getUUID()
 }

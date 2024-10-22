@@ -24,7 +24,7 @@ class XMCPlugin : JavaPlugin() {
         logger.info("$pluginName is being disabled...")
         RideManager.disable()
 
-        XMCProtocol.close()
+        XMCProtocol.disable()
         XMC.disable()
         logger.info("$pluginName has been disabled.")
     }

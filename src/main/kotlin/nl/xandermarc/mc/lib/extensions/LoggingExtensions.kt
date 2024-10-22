@@ -4,10 +4,6 @@ import nl.xandermarc.mc.core.XMC
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.logging.Level
 
-
-@Suppress("UnstableApiUsage")
-val JavaPlugin.pluginName: String get() = pluginMeta.displayName
-
 fun <T> T.log(level: Level, message: String): T {
     val full = Exception().stackTrace
         .map { it.toString() }

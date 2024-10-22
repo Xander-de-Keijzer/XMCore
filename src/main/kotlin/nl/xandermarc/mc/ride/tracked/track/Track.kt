@@ -3,6 +3,7 @@ package nl.xandermarc.mc.ride.tracked.track
 import kotlinx.coroutines.ensureActive
 import kotlinx.serialization.Serializable
 import nl.xandermarc.mc.lib.extensions.debug
+import nl.xandermarc.mc.lib.extensions.encode
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.path.BezierPath
 import org.joml.Vector3d
@@ -41,13 +42,32 @@ data class Track(
         debug("Generating segments of track $name")
         for (i in (1..10)) {
             coroutineContext.ensureActive()
-            segments[i] = TrackSegment(BezierPath(
-                Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
-                Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
-                Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
-                Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0))
-            )).apply { generateTValues() }
-            debug("Generated segment $i of track $name")
+            nodes[i] = Node(Vector3d())
+        }
+        for (i in (1..10)){
+            val a = (1..10).random()
+            val b = (1..10).random()
+            if (a!=b && nodes[a]?.connections?.contains(b) != true) {
+                nodes[a]?.connections?.add(b)
+                nodes[b]?.connections?.add(a)
+            }
+        }
+
+        segments.clear()
+        for ((key, node) in nodes) {
+            for (connected in node.connections) {
+                check(key != connected) { "Node should not be connected to itself" }
+                if (key < connected) {
+                    val segmentId = encode(key, connected)
+                    segments[segmentId] = TrackSegment(BezierPath(
+                        Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
+                        Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
+                        Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0)),
+                        Vector3d(Random.nextDouble(10.0), Random.nextDouble(10.0), Random.nextDouble(10.0))
+                    )).apply { generateTValues() }
+                    debug("Generated segment $segmentId from nodes $key > $connected")
+                }
+            }
         }
     }
 
