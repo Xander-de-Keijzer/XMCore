@@ -8,8 +8,8 @@ import nl.xandermarc.mc.lib.extensions.joinAndLaunchReadJob
 
 abstract class Ride(val name: String) {
     private var asyncJob: Job? = null
-    var state: EnabledState = EnabledState.DISABLED
-        private set(value) {
+    private var state: EnabledState = EnabledState.DISABLED
+        set(value) {
             debug("Ride $name changed state from $field to $value")
             field = value
         }

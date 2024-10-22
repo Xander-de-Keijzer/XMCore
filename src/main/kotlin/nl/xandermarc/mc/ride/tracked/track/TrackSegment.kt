@@ -11,8 +11,10 @@ import kotlin.math.floor
 @Serializable
 data class TrackSegment(
     val path: BezierPath,
-    var aConnected: Int? = null,
-    var bConnected: Int? = null,
+    val defaultA: Int? = null,
+    val defaultB: Int? = null,
+    var aConnected: Int? = defaultA,
+    var bConnected: Int? = defaultB,
     @Serializable(with = QuaterniondSerializer::class)
     var rotation: Quaterniond = Quaterniond(),
     @Serializable(with = Vector3dSerializer::class)
@@ -24,7 +26,7 @@ data class TrackSegment(
 ) {
     var totalArcLength = 0.0
 
-    fun positionAt(t: Double): Vector3d {
+    private fun positionAt(t: Double): Vector3d {
         val position = path.positionAt(t)
         val translatedPosition = Vector3d(position).sub(rotationPoint)
         val rotatedPosition = rotation.transform(translatedPosition)
@@ -32,7 +34,7 @@ data class TrackSegment(
 
         return finalPosition
     }
-    fun forwardAt(t: Double): Vector3d {
+    private fun forwardAt(t: Double): Vector3d {
         val forward = path.forwardAt(t)
         return rotation.transform(forward)
     }
@@ -110,3 +112,61 @@ data class TrackSegment(
     }
 
 }
+
+/*
+Previous Position
+Current Position
+Target Position
+Progression: Double
+Duration: Int
+
+TransferState {
+    LOCKED,
+    POSITIONED,
+    MOVING,
+    CHANGING,
+    STOPPING,
+    STOPPED,
+    EMERGENCY
+}
+
+function easeInOutSine(x) {
+    return -(Math.cos(Math.PI * x) - 1) / 2;
+}
+
+function easeOutSine(x) {
+    return Math.sin((x * Math.PI) / 2);
+}
+
+https://nicmulvaney.com/easing#easeInOutBounce
+
+// Option
+Ease in > Linear > Ease out
+Ease in for X ticks
+Linear else
+Ease out for X ticks til end
+
+if STOP Ease out immediately
+after ease out set previous to current and target to new target
+
+tick() {
+    moving = Current != Target
+    if moving {
+        increment = 1 / Duration.toDouble() # Inc per tick
+        Progression += increment
+        if Progression >= 1.0 {
+            Current = Target
+        } else {
+            Current = Previous.lerp(Target, easeInOutSine(Progression))
+        }
+    }
+}
+
+move(target, duration) {
+    Previous = Current
+    Target = target
+    Duration = duration
+    Progression = 0.0
+}
+
+ */

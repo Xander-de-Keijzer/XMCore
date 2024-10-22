@@ -28,6 +28,8 @@ object XMCProtocol {
     private val injectedChannels: MutableSet<Channel> = Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
     private val logger = Logger.getLogger(XMCProtocol::class.simpleName)
 
+    fun isClosed(): Boolean = closed.get()
+
     fun enable() {
         logger.level = Level.SEVERE
         XMC.server.pluginManager.registerEvents(EventListener, XMC.instance)
@@ -50,8 +52,6 @@ object XMCProtocol {
         injectedChannels.clear()
     }
 
-    fun isClosed(): Boolean = closed.get()
-
     private fun onPacketReceiveAsync(sender: Player, packet: Packet<*>): Packet<*>? {
         logger.severe("$packet")
         when(packet) {
@@ -65,30 +65,19 @@ object XMCProtocol {
 
     private fun injectPlayer(player: Player) {
         val channel: Channel = player.handle.connection.connection.channel
-        injectChannel(channel).player = player
+        getOrCreateHandler(channel).player = player
     }
 
-    private fun injectChannel(channel: Channel): PacketHandler {
-        val handler = PacketHandler()
+    private fun getOrCreateHandler(channel: Channel): PacketHandler {
+        var handler = PacketHandler()
         channel.eventLoop().submit {
-            if (!isClosed() && injectedChannels.add(channel)) {
-                try {
-                    channel.pipeline().addBefore("packet_handler", IDENTIFIER, handler)
-                } catch (ignored: IllegalArgumentException) {
-                    logger.warning("[XMCProtocol] Handler with identifier '$IDENTIFIER' already present.")
-                } catch (e: Exception) {
-                    logger.log(Level.WARNING, "[XMCProtocol] An unknown exception occurred during channel injection.", e)
-                }
+            if (isClosed()) return@submit
+            if (injectedChannels.add(channel)) {
+                try { channel.pipeline().addBefore("packet_handler", IDENTIFIER, handler) }
+                catch (ignored: IllegalArgumentException) { handler = channel.pipeline().get(IDENTIFIER) as PacketHandler }
             }
         }
         return handler
-    }
-
-    private fun injectNetworkManager(networkManager: Connection) {
-        val channel = networkManager.channel
-        if (!injectedChannels.contains(channel)) {
-            injectChannel(channel)
-        }
     }
 
     private fun getPendingNetworkManagers(): Queue<Connection?>? {
@@ -97,7 +86,7 @@ object XMCProtocol {
             @Suppress("UNCHECKED_CAST")
             pendingField.get(serverConnection) as Queue<Connection?>
         } catch (e: Exception) {
-            logger.log(Level.SEVERE, "An exception occured during retrieval of pending server connections.", e)
+            logger.log(Level.SEVERE, "An exception occurred during retrieval of pending server connections.", e)
             return null
         }
     }
@@ -109,7 +98,7 @@ object XMCProtocol {
             synchronized(serverConnection) {
                 getPendingNetworkManagers()?.let { pending ->
                     synchronized(pending) {
-                        pending.filterNotNull().forEach { injectNetworkManager(it) }
+                        pending.filterNotNull().forEach { getOrCreateHandler(it.channel) }
                     }
                 }
             }
@@ -126,12 +115,12 @@ object XMCProtocol {
             if (isClosed()) return
             val player = event.player
             val channel: Channel = player.handle.connection.connection.channel
-            val channelHandler = channel.pipeline()[IDENTIFIER]
+            val channelHandler = channel.pipeline().get(IDENTIFIER)
             if (channelHandler is PacketHandler) {
                 channelHandler.player = player
                 playerCache.remove(player.uniqueId)
             } else {
-                injectChannel(channel).player = player
+                getOrCreateHandler(channel).player = player
             }
         }
 

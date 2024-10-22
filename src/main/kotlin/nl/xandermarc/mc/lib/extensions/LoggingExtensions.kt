@@ -6,7 +6,7 @@ import java.util.logging.Level
 
 
 @Suppress("UnstableApiUsage")
-val JavaPlugin.pluginName get() = pluginMeta.displayName
+val JavaPlugin.pluginName: String get() = pluginMeta.displayName
 
 fun <T> T.log(level: Level, message: String): T {
     val full = Exception().stackTrace
