@@ -1,8 +1,10 @@
 package nl.xandermarc.mc.lib.extensions
 
 import io.netty.buffer.Unpooled
+import io.netty.channel.Channel
 import net.minecraft.core.RegistryAccess
 import net.minecraft.core.registries.Registries
+import net.minecraft.network.Connection
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
 import net.minecraft.network.codec.ByteBufCodecs
@@ -26,6 +28,12 @@ val Player.handle: ServerPlayer
 
 val Player.connection: ServerPlayerConnection
     get() = handle.connection
+
+val Player.network: Connection
+    get() = handle.connection.connection
+
+val Player.channel: Channel
+    get() = network.channel
 
 fun Player.sendPacket(packet: Packet<in ClientGamePacketListener>) =
     connection.send(packet)

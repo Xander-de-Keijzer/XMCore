@@ -7,7 +7,7 @@ import net.minecraft.network.Connection
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.server.MinecraftServer
-import nl.xandermarc.mc.lib.extensions.handle
+import nl.xandermarc.mc.lib.extensions.channel
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -33,7 +33,7 @@ object XMCProtocol {
     fun enable() {
         logger.level = Level.SEVERE
         XMC.server.pluginManager.registerEvents(EventListener, XMC.instance)
-        XMC.server.onlinePlayers.forEach { injectPlayer(it) }
+        XMC.server.onlinePlayers.forEach { getOrCreateHandler(it.channel).player = it }
     }
 
     fun close() {
@@ -52,7 +52,7 @@ object XMCProtocol {
         injectedChannels.clear()
     }
 
-    private fun onPacketReceiveAsync(sender: Player, packet: Packet<*>): Packet<*>? {
+    private fun onPacketReceiveAsync(sender: Player, packet: Packet<*>): Packet<*> {
         logger.severe("$packet")
         when(packet) {
             is ServerboundMovePlayerPacket -> {
@@ -61,11 +61,6 @@ object XMCProtocol {
             else -> { logger.severe(packet.toString()) }
         }
         return packet
-    }
-
-    private fun injectPlayer(player: Player) {
-        val channel: Channel = player.handle.connection.connection.channel
-        getOrCreateHandler(channel).player = player
     }
 
     private fun getOrCreateHandler(channel: Channel): PacketHandler {
@@ -114,7 +109,7 @@ object XMCProtocol {
         fun onPlayerJoinEvent(event: PlayerJoinEvent) {
             if (isClosed()) return
             val player = event.player
-            val channel: Channel = player.handle.connection.connection.channel
+            val channel: Channel = player.channel
             val channelHandler = channel.pipeline().get(IDENTIFIER)
             if (channelHandler is PacketHandler) {
                 channelHandler.player = player
