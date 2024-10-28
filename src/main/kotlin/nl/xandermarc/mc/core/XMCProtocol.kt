@@ -5,7 +5,6 @@ import io.netty.channel.ChannelDuplexHandler
 import io.netty.channel.ChannelHandlerContext
 import net.minecraft.network.Connection
 import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.server.MinecraftServer
 import nl.xandermarc.mc.lib.extensions.channel
 import org.bukkit.entity.Player
@@ -53,13 +52,13 @@ object XMCProtocol {
     }
 
     private fun onPacketReceiveAsync(sender: Player, packet: Packet<*>): Packet<*> {
-        logger.severe("$packet")
-        when(packet) {
-            is ServerboundMovePlayerPacket -> {
-                logger.severe("${packet.x} ${packet.y} ${packet.z}")
-            }
-            else -> { logger.severe(packet.toString()) }
-        }
+//        logger.severe("$packet")
+//        when(packet) {
+//            is ServerboundMovePlayerPacket -> {
+//                logger.severe("${packet.x} ${packet.y} ${packet.z}")
+//            }
+//            else -> { logger.severe(packet.toString()) }
+//        }
         return packet
     }
 

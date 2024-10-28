@@ -16,11 +16,15 @@ fun ItemStack.has(key: NamespacedKey) =
 fun <P: Any, C: Any> ItemStack.get(key: NamespacedKey, type: PersistentDataType<P, C>) =
     itemMeta?.persistentDataContainer?.get(key, type)
 
-fun item(material: Material) = item(material, UUID.randomUUID())
-fun item(material: Material, uuid: UUID) =
+fun item(material: Material, uuid: UUID = UUID.randomUUID()) =
     ItemStack(material).apply {
         set(Keys.Item.UUID_HIGH, PersistentDataType.LONG, uuid.mostSignificantBits)
         set(Keys.Item.UUID_LOW, PersistentDataType.LONG, uuid.leastSignificantBits)
+    }
+
+fun temp(material: Material, uuid: UUID = UUID.randomUUID()) =
+    item(material, uuid).apply {
+        set(Keys.Item.TEMP, PersistentDataType.BYTE, 1)
     }
 
 fun ItemStack.isItem() = has(Keys.Item.UUID_HIGH) && has(Keys.Item.UUID_LOW)

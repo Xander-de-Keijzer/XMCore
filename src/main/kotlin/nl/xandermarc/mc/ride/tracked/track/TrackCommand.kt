@@ -34,8 +34,8 @@ object TrackCommand : Command("track") {
                 stringArgument("track")
                     .executePlayer { player ->
                         val track = getString("track")
-                        if (EditorManager.isUsingEditor(player)) {
-                            EditorManager.stopEditor(player)
+                        if (EditorManager.hasEditor(player)) {
+                            EditorManager.closeEditor(player)
                         } else if (TrackManager.exists(track)) {
                             EditorManager.registerEditor(TrackEditor(player, TrackManager.get(track)!!))
                         } else {
@@ -44,8 +44,8 @@ object TrackCommand : Command("track") {
                     }
             )
             .executePlayer { player ->
-                if (EditorManager.isUsingEditor(player)) {
-                    EditorManager.stopEditor(player)
+                if (EditorManager.hasEditor(player)) {
+                    EditorManager.closeEditor(player)
                 } else {
                     source.sender.sendPlainMessage("You are not editing any track (use /track edit <name>).")
                 }

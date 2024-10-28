@@ -10,4 +10,5 @@ object TrackManager {
     fun remove(trackName: String) = synchronized(tracks) { tracks.removeAll { it.name == trackName } }
     fun remove(track: Track) = synchronized(tracks) { tracks.remove(track) }
     fun purgeEmpty() = synchronized(tracks) { tracks.removeAll { it.isEmpty() } }
+    fun disable() = Unit // TODO Save tracks
 }

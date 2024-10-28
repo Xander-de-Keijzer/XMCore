@@ -1,5 +1,7 @@
 package nl.xandermarc.mc.lib.extensions
 
+import net.kyori.adventure.text.Component
+import nl.xandermarc.mc.core.XMC
 import org.bukkit.plugin.java.JavaPlugin
 import kotlin.math.sqrt
 
@@ -17,3 +19,9 @@ fun <T, U> Iterable<T>.onEach(f: T.(U) -> Unit, other: Iterable<U>) =
 
 @Suppress("UnstableApiUsage")
 val JavaPlugin.pluginName: String get() = pluginMeta.displayName
+
+fun String.deserialize(vararg args: Any?): Component =
+    XMC.message.deserialize(this.format(*args))
+
+fun Component.plain(): String =
+    XMC.plain.serialize(this)

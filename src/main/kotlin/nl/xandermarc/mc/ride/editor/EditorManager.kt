@@ -1,39 +1,71 @@
 package nl.xandermarc.mc.ride.editor
 
+import io.papermc.paper.event.player.AsyncChatEvent
+import nl.xandermarc.mc.core.XMC
+import nl.xandermarc.mc.lib.extensions.plain
+import nl.xandermarc.mc.ride.editor.event.ChatEvent
 import org.bukkit.entity.Player
+import org.bukkit.event.EventHandler
+import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerInteractAtEntityEvent
+import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
+import org.bukkit.event.player.PlayerQuitEvent
 
-object EditorManager {
+object EditorManager: Listener {
 
     private val editors = mutableListOf<Editor<*>>()
+    private fun editor(player: Player, f: Editor<*>.() -> Unit) {
+        editors.filter { it.player == player }.forEach { f(it) }
+    }
 
     fun registerEditor(editor: Editor<*>) {
         editors.add(editor)
     }
 
-    fun isUsingEditor(player: Player): Boolean =
+    fun hasEditor(player: Player): Boolean =
         editors.any { it.player == player }
 
-    fun unregisterEditor(editor: Editor<*>) {
-        editors.remove(editor)
+    fun closeEditor(player: Player) {
+        editor(player) {
+            close()
+            editors.remove(this)
+        }
     }
 
-    fun stopEditor(player: Player) {
-        editors.filter { it.player == player }.forEach { it.close() }
-        editors.removeAll { it.player == player }
-    }
-
-    fun stopEditors() {
+    fun disable() {
         editors.forEach { it.close() }
         editors.clear()
     }
 
-    fun handleClick(event: PlayerInteractEvent) {
-        editors.filter {
-            it.player == event.player
-        }.forEach {
-            it.click(1)
+    @EventHandler
+    private fun clickEvent(event: PlayerInteractEvent) {
+        XMC.logger.info("$event")
+    }
+
+    @EventHandler
+    private fun clickEvent(event: PlayerInteractEntityEvent) {
+        XMC.logger.info("$event")
+    }
+
+    @EventHandler
+    private fun clickEvent(event: PlayerInteractAtEntityEvent) {
+        XMC.logger.info("$event")
+    }
+
+    @EventHandler
+    private fun chatEvent(event: AsyncChatEvent) {
+        editor(event.player) {
+            call(ChatEvent(
+                event.player.inventory.itemInMainHand,
+                event.message().plain()
+            ))
         }
+    }
+
+    @EventHandler
+    private fun playerQuit(event: PlayerQuitEvent) {
+        closeEditor(event.player)
     }
 
 }

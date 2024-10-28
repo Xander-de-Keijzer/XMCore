@@ -13,12 +13,28 @@ class TrackEditor(player: Player, private val track: Track) : Editor<TrackEditor
     mapOf(
         0 to Tool(
             Material.STICK,
-            onRightClick = Tool.Event("New node") {
-                this.track.addNode(Node(player.location.toVector3d()))
+            onRightClick = Tool.ToolEvent("New node") {
+                track.addNode(Node(player.location.toVector3d()))
             }
+        ),
+        8 to Tool(
+            Material.ANVIL,
+            onRightClick = Tool.ToggleEvent()
+        )
+    ),
+    mapOf(
+        0 to Tool(
+            Material.LIME_CONCRETE,
+            onRightClick = Tool.ToolEvent("Move node up") { selected {
+                location.y += 0.1
+            } }
         )
     )
 ) {
+    private var selected: Int = -1
+    private fun selected(f: Node.() -> Unit) {
+        track.nodes[selected]?.apply(f)
+    }
     override val instance = this
     override fun stop(): Unit =
         // TODO Stop editor
