@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.network.packet.types.response
+package nl.xandermarc.test.network.packet.types.response
 
 data class PacketResponseException(
     val message: String

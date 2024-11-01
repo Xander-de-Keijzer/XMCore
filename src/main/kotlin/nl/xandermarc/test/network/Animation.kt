@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.test
+package nl.xandermarc.test.network
 
 import nl.xandermarc.mc.lib.data.Globals
 import org.joml.Vector3d

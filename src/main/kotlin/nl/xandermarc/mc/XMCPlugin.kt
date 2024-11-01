@@ -6,8 +6,8 @@ import nl.xandermarc.mc.lib.extensions.pluginName
 import nl.xandermarc.mc.ride.managers.RideManager
 import nl.xandermarc.mc.ride.commands.TrackCommand
 import nl.xandermarc.mc.ride.managers.TrackManager
-import nl.xandermarc.mc.test.TestCommand
-import nl.xandermarc.mc.test.TestTrackedRide
+import nl.xandermarc.test.network.TestCommand
+import nl.xandermarc.test.network.TestTrackedRide
 import org.bukkit.plugin.java.JavaPlugin
 
 class XMCPlugin : JavaPlugin() {

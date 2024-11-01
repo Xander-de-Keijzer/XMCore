@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.network.packet
+package nl.xandermarc.test.network.packet
 
 enum class PacketDomain {
     SOCKET,

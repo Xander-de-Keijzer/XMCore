@@ -8,10 +8,14 @@ import net.minecraft.network.protocol.Packet
 import net.minecraft.server.MinecraftServer
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.channel
+import nl.xandermarc.mc.lib.utils.PlayerReceivePacketEvent
 import org.bukkit.entity.Player
+import org.bukkit.event.Cancellable
 import org.bukkit.event.EventHandler
+import org.bukkit.event.HandlerList
 import org.bukkit.event.Listener
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import java.util.*
@@ -52,15 +56,11 @@ object XMCProtocol {
         injectedChannels.clear()
     }
 
-    private fun onPacketReceiveAsync(sender: Player, packet: Packet<*>): Packet<*> {
-//        logger.severe("$packet")
-//        when(packet) {
-//            is ServerboundMovePlayerPacket -> {
-//                logger.severe("${packet.x} ${packet.y} ${packet.z}")
-//            }
-//            else -> { logger.severe(packet.toString()) }
-//        }
-        return packet
+    private fun onPacketReceiveAsync(player: Player, packet: Packet<*>): Packet<*>? {
+        if (!Globals.PACKET_EVENT_ENABLED) return packet
+        return PlayerReceivePacketEvent(packet, player).run {
+            if (callEvent()) this.packet else null
+        }
     }
 
     private fun getOrCreateHandler(channel: Channel): PacketHandler {

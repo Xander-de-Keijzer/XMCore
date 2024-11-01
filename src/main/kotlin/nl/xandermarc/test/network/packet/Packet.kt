@@ -1,10 +1,9 @@
-package nl.xandermarc.mc.network.packet
+package nl.xandermarc.test.network.packet
 
 import nl.xandermarc.mc.lib.extensions.warn
-import nl.xandermarc.mc.network.NetworkManager
-import nl.xandermarc.mc.network.packet.types.*
-import nl.xandermarc.mc.network.packet.types.response.PacketResponseAccepted
-import nl.xandermarc.mc.network.packet.types.response.PacketResponseAcknowledged
+import nl.xandermarc.test.network.packet.types.*
+import nl.xandermarc.test.network.packet.types.response.PacketResponseAccepted
+import nl.xandermarc.test.network.packet.types.response.PacketResponseAcknowledged
 import java.util.concurrent.atomic.AtomicInteger
 
 abstract class Packet(
@@ -23,7 +22,7 @@ abstract class Packet(
         val listenerKey = try { responseKey }
         catch (e: IllegalStateException) { warn(e.message ?: "Failed to create a response key to listen to"); return }
 
-        NetworkManager.onResponse(listenerKey, block)
+        nl.xandermarc.test.network.NetworkManager.onResponse(listenerKey, block)
     }
     val key = listOf(
         direction.ordinal,

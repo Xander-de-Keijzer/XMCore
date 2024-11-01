@@ -17,6 +17,7 @@ object Globals {
     private const val DEFAULT_WORLD = "world"
     const val JOIN_MESSAGE = "<green>%s Joined the game"
     const val QUIT_MESSAGE = "<red>%s Left the game"
+    const val PACKET_EVENT_ENABLED = false
 
     val logger: Logger = Logger.getLogger("XMC")
     val message: MiniMessage = MiniMessage.miniMessage()

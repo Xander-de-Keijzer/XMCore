@@ -10,23 +10,15 @@ abstract class RideEntity(
     type: EntityType<*>,
     location: Vector3d,
 ) : UpdatableEntity(type, location) {
-    private var nextLocation: Vector3d? = null
     private val children = mutableListOf<RideEntity>()
 
     private var parent: RideEntity? = null
     private var offset: Vector3d? = null
     private var rotation: Quaterniond? = null
 
-    override fun onUpdate() {
-        nextLocation?.let {
-            location = it
-        }
-        nextLocation = null
-    }
-
     fun move(location: Vector3d) {
         addUpdate(TeleportEntityPacket(id, location))
-        nextLocation = location
+        this.location = location
     }
 
     fun addChild(child: RideEntity, offset: Vector3d, rotation: Quaterniond) {

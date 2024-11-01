@@ -1,6 +1,6 @@
-package nl.xandermarc.mc.network.packet.types
+package nl.xandermarc.test.network.packet.types
 
-import nl.xandermarc.mc.network.packet.types.response.PacketResponseType
+import nl.xandermarc.test.network.packet.types.response.PacketResponseType
 
 data class PacketResponse(
     val id: Int,

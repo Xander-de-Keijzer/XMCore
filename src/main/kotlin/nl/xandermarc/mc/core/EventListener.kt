@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerEvent
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 
-object XMCListener: Listener {
+object EventListener: Listener {
 
     @EventHandler
     private fun onQuit(event: PlayerQuitEvent) {
