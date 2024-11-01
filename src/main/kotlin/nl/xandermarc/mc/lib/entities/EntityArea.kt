@@ -33,7 +33,7 @@ class EntityArea<T : Area>(
         trackedArea.added.with(entities) { showTo(it) }
         trackedArea.removed.with(entities) { removeFrom(it) }
         BundlePacket(
-            entities.filterIsInstance<UpdatableEntity>().flatMap { it.getUpdates() }
+            entities.filterIsInstance<MutableEntity>().flatMap { it.getUpdates() }
         ).send(trackedArea.items)
     }
 
