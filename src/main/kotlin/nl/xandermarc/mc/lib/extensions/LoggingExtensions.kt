@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.lib.extensions
 
-import nl.xandermarc.mc.core.XMC
+import nl.xandermarc.mc.lib.data.Globals
 import java.util.logging.Level
 
 fun <T> T.log(level: Level, message: String): T {
@@ -12,9 +12,9 @@ fun <T> T.log(level: Level, message: String): T {
 
     if (level == Level.INFO) {
         val stripped = "(" + full.split("(").last()
-        XMC.logger.info( "$stripped: $message")
+        Globals.logger.info( "$stripped: $message")
     } else {
-        XMC.logger.log(level, "$full: $message")
+        Globals.logger.log(level, "$full: $message")
     }
     return this
 }

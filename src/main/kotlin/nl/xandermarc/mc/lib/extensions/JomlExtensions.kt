@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.lib.extensions
 
-import nl.xandermarc.mc.core.XMC
+import nl.xandermarc.mc.lib.data.Globals
 import org.bukkit.Location
 import org.bukkit.World
 import org.bukkit.util.Vector
@@ -12,14 +12,17 @@ import org.joml.Vector3f
 import kotlin.math.cos
 import kotlin.math.sin
 
+fun vec3d(x: Double = 0.0, y: Double = 0.0, z: Double = 0.0) = Vector3d(x, y, z)
+fun vec3f(x: Float = 0F, y: Float = 0F, z: Float = 0F) = Vector3f(x, y, z)
+
 fun Vector3d.toBukkit() = Vector(x, y, z)
 fun Vector3f.toBukkit() = Vector(x, y, z)
 
-fun Vector3d.toLocation(world: World? = null) = Location(world ?: XMC.world, x, y, z)
+fun Vector3d.toLocation(world: World? = null) = Location(world ?: Globals.world, x, y, z)
 fun Vector3f.toLocation(world: World? = null) = toVector3d().toLocation(world)
 
-fun Vector3d.toLocation(world: String) = toLocation(XMC.server.getWorld(world))
-fun Vector3f.toLocation(world: String) = toLocation(XMC.server.getWorld(world))
+fun Vector3d.toLocation(world: String) = toLocation(Globals.server.getWorld(world))
+fun Vector3f.toLocation(world: String) = toLocation(Globals.server.getWorld(world))
 
 fun Location.toVector3d() = Vector3d(x, y, z)
 fun Location.toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())

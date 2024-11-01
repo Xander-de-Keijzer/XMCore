@@ -5,7 +5,7 @@ import net.minecraft.world.entity.EntityType
 import nl.xandermarc.mc.lib.extensions.build
 import nl.xandermarc.mc.lib.extensions.writeEntityType
 import nl.xandermarc.mc.lib.extensions.writeVector3d
-import nl.xandermarc.mc.lib.packets.AbstractPacket
+import nl.xandermarc.mc.lib.packets.Packet
 import org.joml.Vector3d
 import java.lang.Math.clamp
 import java.util.*
@@ -21,7 +21,7 @@ class AddEntityPacket(
     headYaw: Double = 0.0,
     entityData: Int = 0,
     velocity: Vector3d = Vector3d()
-) : AbstractPacket<ClientboundAddEntityPacket>(ClientboundAddEntityPacket.STREAM_CODEC.build {
+) : Packet<ClientboundAddEntityPacket>(ClientboundAddEntityPacket.STREAM_CODEC.build {
     writeVarInt(id)
     writeUUID(uuid)
     writeEntityType(entityType)

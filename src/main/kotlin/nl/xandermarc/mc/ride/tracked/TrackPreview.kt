@@ -21,18 +21,18 @@ class TrackPreview(private val player: Player) {
     fun show(track: Track) {
         track.nodes.forEach {
             val id = EntityID.next
-            AddEntityPacket(id, EntityType.ITEM_DISPLAY, it.value.location).sendPacket(player)
+            AddEntityPacket(id, EntityType.ITEM_DISPLAY, it.value.location).send(player)
             SetEntityDataPacket(
                 id,
                 EntityData.ITEM_STACK_ID.create(item(Material.WHITE_CONCRETE).handle),
                 EntityData.ITEM_DISPLAY_ID.create(ItemDisplayContext.HEAD.id),
-            ).sendPacket(player)
+            ).send(player)
             entities.add(id)
         }
     }
 
     fun remove() {
-        RemoveEntitiesPacket(*entities.toIntArray()).sendPacket(player)
+        RemoveEntitiesPacket(*entities.toIntArray()).send(player)
         entities.clear()
     }
 

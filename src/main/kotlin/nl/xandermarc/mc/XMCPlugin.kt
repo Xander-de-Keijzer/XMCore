@@ -1,12 +1,12 @@
 package nl.xandermarc.mc
 
-import nl.xandermarc.mc.core.XMC
-import nl.xandermarc.mc.core.XMCProtocol
+import nl.xandermarc.mc.lib.data.Globals
+import nl.xandermarc.mc.lib.editor.EditorManager
 import nl.xandermarc.mc.lib.extensions.pluginName
-import nl.xandermarc.mc.ride.RideManager
-import nl.xandermarc.mc.ride.editor.EditorManager
-import nl.xandermarc.mc.ride.tracked.track.TrackCommand
-import nl.xandermarc.mc.ride.tracked.track.TrackManager
+import nl.xandermarc.mc.ride.managers.RideManager
+import nl.xandermarc.mc.ride.commands.TrackCommand
+import nl.xandermarc.mc.ride.managers.TrackManager
+import nl.xandermarc.mc.test.TestCommand
 import nl.xandermarc.mc.test.TestTrackedRide
 import org.bukkit.plugin.java.JavaPlugin
 
@@ -14,12 +14,14 @@ class XMCPlugin : JavaPlugin() {
 
     override fun onEnable() {
         logger.info("$pluginName is being enabled...")
-        XMC.enable(this)
+        Globals.instance = this
         XMCProtocol.enable()
 
+        TestCommand.register()
         TestTrackedRide.enable()
         TrackCommand.register()
         logger.info("$pluginName has been enabled.")
+        server.pluginManager.disablePlugin(this)
     }
 
     override fun onDisable() {
@@ -29,7 +31,7 @@ class XMCPlugin : JavaPlugin() {
         TrackManager.disable()
 
         XMCProtocol.disable()
-        XMC.disable()
+        Globals.supervisor.complete()
         logger.info("$pluginName has been disabled.")
     }
 

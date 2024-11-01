@@ -38,6 +38,9 @@ val Player.channel: Channel
 fun Player.sendPacket(packet: Packet<in ClientGamePacketListener>) =
     connection.send(packet)
 
+fun Player.sendPacket(packet: nl.xandermarc.mc.lib.packets.Packet<*>) =
+    connection.send(packet.packet)
+
 val ItemStack.handle: net.minecraft.world.item.ItemStack
     get() = (this as CraftItemStack).handle
 

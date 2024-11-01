@@ -14,9 +14,11 @@ fun <T : ArgumentBuilder<CommandSourceStack, T>> T.executePlayer(
 ): T = executes {
     if (it.source.sender is Player) {
         block(it, it.source.sender as Player)
-        com.mojang.brigadier.Command.SINGLE_SUCCESS
+        1
+    } else {
+        it.source.sender.sendMessage("This command can only be executed by a player.")
+        0
     }
-    0
 }
 
 fun <T : ArgumentBuilder<CommandSourceStack, T>> T.execute(

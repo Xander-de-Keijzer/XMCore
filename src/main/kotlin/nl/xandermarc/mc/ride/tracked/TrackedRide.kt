@@ -1,29 +1,29 @@
 package nl.xandermarc.mc.ride.tracked
 
 import kotlinx.coroutines.ensureActive
+import nl.xandermarc.mc.lib.area.Area
 import nl.xandermarc.mc.lib.extensions.debugAll
 import nl.xandermarc.mc.lib.extensions.info
-import nl.xandermarc.mc.ride.Ride
+import nl.xandermarc.mc.ride.AsyncRide
 import nl.xandermarc.mc.ride.tracked.track.Track
-import nl.xandermarc.mc.ride.tracked.track.TrackManager
+import nl.xandermarc.mc.ride.managers.TrackManager
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.coroutineContext
 
-abstract class TrackedRide(rideName: String) : Ride(rideName) {
+abstract class TrackedRide<T : Area>(
+    rideName: String,
+    area: T
+) : AsyncRide<T>(rideName, area) {
     private val nextTrainId = AtomicInteger(1)
     private val tracks = mutableListOf<Track>()
-    val trackList
-        get() = tracks.toList()
     private val trains = mutableListOf<Train>()
-    val trainList
-        get() = trains
 
     protected suspend fun loadTrack(
         trackName: String,
         builder: Track.() -> Unit = {}
     ) {
         coroutineContext.ensureActive()
-        val track = TrackManager.getOrCreate(trackName)
+        val track = TrackManager.create(trackName)
         if (track.segments.isEmpty()) track.loadOrGenerateSegments()
         track.apply { builder() }
         tracks.add(track)

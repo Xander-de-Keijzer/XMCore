@@ -1,15 +1,20 @@
 package nl.xandermarc.mc.test
 
+import nl.xandermarc.mc.lib.area.CuboidArea
 import nl.xandermarc.mc.ride.tracked.TrackedRide
 import nl.xandermarc.mc.ride.tracked.Train
+import org.joml.Vector3d
 
-object TestTrackedRide : TrackedRide("test") { // Define carts sizes models etc
-    override suspend fun load() {
+object TestTrackedRide : TrackedRide<CuboidArea>(
+    "test",
+    CuboidArea(Vector3d(), Vector3d())
+) { // Define carts sizes models etc
+    override suspend fun loadAsync() {
         loadTrack("test_track")
         loadTrack("another_track")
     }
 
-    override fun init() {
+    override fun load() {
         val train = Train.Builder(weight = 500.0)
         track("test_track") {
             addTrain(train, segment = segments.keys.random(), position = 20.0) //ID: 1

@@ -1,6 +1,7 @@
 package nl.xandermarc.mc.core
 
 import nl.xandermarc.mc.lib.data.Keys
+import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.deserialize
 import nl.xandermarc.mc.lib.extensions.has
 import org.bukkit.event.EventHandler
@@ -13,13 +14,13 @@ object XMCListener: Listener {
 
     @EventHandler
     private fun onQuit(event: PlayerQuitEvent) {
-        event.quitMessage(XMC.QUIT_MESSAGE.deserialize(event.player.name))
+        event.quitMessage(Globals.QUIT_MESSAGE.deserialize(event.player.name))
         onConnection(event)
     }
 
     @EventHandler
     private fun onJoin(event: PlayerJoinEvent) {
-        event.joinMessage(XMC.JOIN_MESSAGE.deserialize(event.player.name))
+        event.joinMessage(Globals.JOIN_MESSAGE.deserialize(event.player.name))
         onConnection(event)
     }
 
