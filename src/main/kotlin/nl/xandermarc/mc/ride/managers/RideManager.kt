@@ -4,8 +4,8 @@ import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.debug
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.extensions.warn
-import nl.xandermarc.mc.ride.AsyncRide
 import nl.xandermarc.mc.ride.AbstractRide
+import nl.xandermarc.mc.ride.AsyncRide
 
 object RideManager {
     private val rides = mutableListOf<AbstractRide<*>>()

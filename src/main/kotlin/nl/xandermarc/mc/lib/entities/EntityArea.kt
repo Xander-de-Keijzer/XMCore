@@ -1,8 +1,8 @@
 package nl.xandermarc.mc.lib.entities
 
-import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.area.Area
 import nl.xandermarc.mc.lib.area.TrackedArea
+import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.toVector3d
 import nl.xandermarc.mc.lib.extensions.with
 import nl.xandermarc.mc.lib.packets.BundlePacket

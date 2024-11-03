@@ -1,6 +1,7 @@
 package nl.xandermarc.mc.ride
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.xandermarc.mc.lib.area.Area

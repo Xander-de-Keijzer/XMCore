@@ -3,15 +3,7 @@ package nl.xandermarc.mc.lib.extensions
 import net.kyori.adventure.text.Component
 import nl.xandermarc.mc.lib.data.Globals
 import org.bukkit.plugin.java.JavaPlugin
-import kotlin.contracts.ExperimentalContracts
-import kotlin.contracts.InvocationKind
-import kotlin.contracts.contract
 import kotlin.math.sqrt
-import kotlin.reflect.KClass
-import kotlin.reflect.KParameter
-import kotlin.reflect.jvm.isAccessible
-import kotlin.reflect.jvm.jvmErasure
-import kotlin.reflect.jvm.jvmName
 
 fun encode(a: Int, b: Int): Int {
     val (larger, smaller) = if (a > b) a to b else b to a

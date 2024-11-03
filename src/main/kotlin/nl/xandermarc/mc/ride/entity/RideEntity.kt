@@ -1,8 +1,8 @@
 package nl.xandermarc.mc.ride.entity
 
 import net.minecraft.world.entity.EntityType
-import nl.xandermarc.mc.lib.packets.entities.TeleportEntityPacket
 import nl.xandermarc.mc.lib.entities.MutableEntity
+import nl.xandermarc.mc.lib.packets.entities.TeleportEntityPacket
 import org.joml.Quaterniond
 import org.joml.Vector3d
 

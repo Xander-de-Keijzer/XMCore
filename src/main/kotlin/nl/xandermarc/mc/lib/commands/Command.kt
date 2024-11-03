@@ -3,11 +3,11 @@ package nl.xandermarc.mc.lib.commands
 import io.papermc.paper.command.brigadier.BasicCommand
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.commands.annotations.Options
 import nl.xandermarc.mc.lib.commands.annotations.PlayerOnly
 import nl.xandermarc.mc.lib.commands.annotations.Range
 import nl.xandermarc.mc.lib.commands.annotations.Root
+import nl.xandermarc.mc.lib.data.Globals
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
