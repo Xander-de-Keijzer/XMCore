@@ -4,13 +4,14 @@ import nl.xandermarc.mc.lib.area.Area
 import nl.xandermarc.mc.lib.extensions.debug
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.ride.managers.RideManager
+import org.bukkit.plugin.java.JavaPlugin
 
 abstract class SyncRide<T : Area>(
     name: String,
     area: T
 ) : AbstractRide<T>(name, area) {
 
-    override fun enable() {
+    override fun enable(plugin: JavaPlugin) {
         require(RideManager.register(this)) { "Ride $name could not be enabled by the RideManager." }
 
         info("Ride $name is being enabled.")

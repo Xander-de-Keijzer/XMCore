@@ -8,9 +8,11 @@ import nl.xandermarc.mc.lib.commands.annotations.PlayerOnly
 import nl.xandermarc.mc.lib.commands.annotations.Range
 import nl.xandermarc.mc.lib.commands.annotations.Root
 import nl.xandermarc.mc.lib.data.Globals
+import nl.xandermarc.mc.lib.utils.Executor
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Entity
 import org.bukkit.entity.Player
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 import kotlin.reflect.KFunction
 import kotlin.reflect.KParameter
@@ -24,7 +26,7 @@ import kotlin.reflect.jvm.jvmName
 abstract class Command(
     val name: String? = null,
     val description: String? = null,
-) : BasicCommand {
+) : BasicCommand, Executor {
     protected var source: CommandSender? = null
     protected var executor: Entity? = null
     protected val player: Player
@@ -32,10 +34,10 @@ abstract class Command(
             "accessing player is only safe when function is marked with @PlayerOnly"
         )
 
-    fun register() {
+    override fun register(plugin: JavaPlugin) {
         val className = (this::class.simpleName ?: this::class.jvmName).lowercase()
         val commandName = if (className.endsWith("command")) className.dropLast(7) else className
-        Globals.instance.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
+        plugin.lifecycleManager.registerEventHandler(LifecycleEvents.COMMANDS) {
             it.registrar().register(name ?: commandName, description, this)
         }
     }

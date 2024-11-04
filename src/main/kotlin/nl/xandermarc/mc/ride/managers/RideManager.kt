@@ -4,10 +4,12 @@ import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.debug
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.extensions.warn
+import nl.xandermarc.mc.lib.utils.Manager
 import nl.xandermarc.mc.ride.AbstractRide
 import nl.xandermarc.mc.ride.AsyncRide
+import org.bukkit.plugin.java.JavaPlugin
 
-object RideManager {
+object RideManager : Manager {
     private val rides = mutableListOf<AbstractRide<*>>()
     private fun check(test: Int) {
         Globals.logger.info("TEST $test!")
@@ -38,7 +40,11 @@ object RideManager {
         rides.filterIsInstance<AsyncRide<*>>().forEach { it.updateAsync() }
     }
 
-    fun disable() {
+    override fun enable(plugin: JavaPlugin) {
+        //
+    }
+
+    override fun disable() {
         rides.forEach { it.disable() }
     }
 }

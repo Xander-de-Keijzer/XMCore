@@ -10,9 +10,9 @@ class MultiPath(
         return paths[totalT.toInt()].positionAt(totalT % 1)
     }
 
-    override fun getForwardAt(t: Double): Vector3d {
+    override fun getTangentAt(t: Double): Vector3d {
         val totalT = (t * paths.size)
-        return paths[totalT.toInt()].forwardAt(totalT % 1)
+        return paths[totalT.toInt()].tangentAt(totalT % 1)
     }
 
     override fun length(): Double = paths.sumOf { it.length() }

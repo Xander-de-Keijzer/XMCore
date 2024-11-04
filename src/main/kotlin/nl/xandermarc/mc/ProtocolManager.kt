@@ -8,36 +8,32 @@ import net.minecraft.network.protocol.Packet
 import net.minecraft.server.MinecraftServer
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.channel
+import nl.xandermarc.mc.lib.utils.Manager
 import nl.xandermarc.mc.lib.utils.PlayerReceivePacketEvent
 import org.bukkit.entity.Player
-import org.bukkit.event.EventHandler
-import org.bukkit.event.Listener
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerLoginEvent
+import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
-import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.concurrent.Volatile
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
-object XMCProtocol {
+object ProtocolManager : Manager {
     const val IDENTIFIER: String = "XMCProtocol"
     private val serverConnection = MinecraftServer.getServer().connection
     private val closed = AtomicBoolean(false)
     val playerCache: MutableMap<UUID, Player> = Collections.synchronizedMap(HashMap())
     private val injectedChannels: MutableSet<Channel> = Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
-    private val logger = Logger.getLogger(XMCProtocol::class.simpleName)
+    private val logger = Logger.getLogger(ProtocolManager::class.simpleName)
 
     fun isClosed(): Boolean = closed.get()
 
-    fun enable() {
-        Globals.server.onlinePlayers.forEach { getOrCreateHandler(it.channel).player = it }
+    override fun enable(plugin: JavaPlugin) {
+        plugin.server.onlinePlayers.forEach { getOrCreateHandler(it.channel).player = it }
     }
 
-    fun disable() {
+    override fun disable() {
         if (closed.getAndSet(true)) return
         synchronized(serverConnection) {
             injectedChannels.forEach {

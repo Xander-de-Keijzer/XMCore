@@ -1,172 +1,56 @@
 package nl.xandermarc.mc.ride.tracked.track
 
 import kotlinx.serialization.Serializable
-import nl.xandermarc.mc.lib.path.BezierPath
-import nl.xandermarc.mc.lib.serializers.QuaterniondSerializer
+import nl.xandermarc.mc.lib.path.NodePath
 import nl.xandermarc.mc.lib.serializers.Vector3dSerializer
-import org.joml.Quaterniond
 import org.joml.Vector3d
-import kotlin.math.floor
 
 @Serializable
-data class TrackSegment(
-    val path: BezierPath,
-    val defaultA: Int? = null,
-    val defaultB: Int? = null,
-    var aConnected: Int? = defaultA,
-    var bConnected: Int? = defaultB,
-    @Serializable(with = QuaterniondSerializer::class)
-    var rotation: Quaterniond = Quaterniond(),
-    @Serializable(with = Vector3dSerializer::class)
-    var translation: Vector3d = Vector3d(),
-    @Serializable(with = Vector3dSerializer::class)
-    var rotationPoint: Vector3d = Vector3d(),
-
-    private val tValues: MutableList<Double> = mutableListOf()
+open class TrackSegment(
+    val path: NodePath,
+    val aConnected: Int? = null,
+    val bConnected: Int? = null,
+    val frames: MutableList<Frame> = mutableListOf(),
 ) {
-    var totalArcLength = 0.0
+    constructor(nodeA: Node, nodeB: Node) : this(NodePath(nodeA, nodeB))
 
-    private fun positionAt(t: Double): Vector3d {
-        val position = path.positionAt(t)
-        val translatedPosition = Vector3d(position).sub(rotationPoint)
-        val rotatedPosition = rotation.transform(translatedPosition)
-        val finalPosition = rotatedPosition.add(rotationPoint).add(translation)
+    fun render(steps: Int) {
+        var cumDist = 0.0
+        val a = path.tangentAt(0.0).normalize()
+        val b = path.secondDerivativeAt(0.0).add(a).normalize()
+        val r = b.cross(a, Vector3d()).normalize()
+        frames.clear()
+        frames.add(Frame(0.0, 0.0, path.positionAt(0.0), a, r, r.cross(a, Vector3d())))
 
-        return finalPosition
-    }
-    private fun forwardAt(t: Double): Vector3d {
-        val forward = path.forwardAt(t)
-        return rotation.transform(forward)
-    }
-    fun positionAtDistance(distance: Double): Vector3d {
-        return positionAt(distanceToT(distance))
-    }
-    fun forwardAtDistance(distance: Double): Vector3d {
-        return forwardAt(distanceToT(distance))
-    }
+        for (t in 1 until steps) {
+            val x0 = frames.last()
+            val t1 = t.toDouble()/steps
+            val x1o = path.positionAt(t1)
+            val x1t = path.tangentAt(t1)
+            val v1 = x1o.sub(x0.origin, Vector3d())
+            val c1 = 2 / v1.dot(v1)
+            val riL = x0.axis.sub(v1, Vector3d()).mul(c1).mul(v1.dot(x0.axis))
+            val tiL = x0.tangent.sub(v1, Vector3d()).mul(c1).mul(v1.dot(x0.tangent))
+            val v2 = x1t.sub(tiL)
+            val x1a = riL.sub(v2, Vector3d()).mul(2/v2.dot(v2)).mul(v2.dot(riL))
+            val x1n = x1a.cross(x1t, Vector3d())
 
-    fun generateTValues(
-        steps: Int = (path.length() * 10).toInt().coerceAtLeast(100),
-        step: Double = 0.01
-    ) {
-        tValues.clear()
-
-        // Precompute positions and cumulative arc lengths
-        val n = steps.coerceAtLeast(1)
-        val tList = (0..n).map { it.toDouble() / n }
-        val positions = tList.map { path.positionAt(it) }  // Positions before transformation
-        val distances = positions.zipWithNext().map { (p1, p2) -> p1.distance(p2) }
-        val cumulativeDistances = mutableListOf(0.0)
-        distances.forEach { cumulativeDistances.add(cumulativeDistances.last() + it) }
-        totalArcLength = cumulativeDistances.last()
-
-        // Handle case where totalLength is zero (degenerate curve)
-        if (totalArcLength == 0.0) {
-            tValues.add(0.0)
-            return
-        }
-
-        // Map desired distances to t values
-        val numSteps = (totalArcLength / step).toInt().coerceAtLeast(1)
-        val stepLength = totalArcLength / numSteps
-        for (i in 0..numSteps) {
-            val distanceAlongCurve = i * stepLength
-            // Use binary search to find the insertion point
-            val index = cumulativeDistances.binarySearch(distanceAlongCurve)
-            val t: Double
-            if (index >= 0) {
-                // Exact match found
-                t = tList[index]
-            } else {
-                // Interpolate between the two nearest points
-                val insertionPoint = -index - 1
-                if (insertionPoint >= cumulativeDistances.size) {
-                    t = tList.last()
-                } else if (insertionPoint == 0) {
-                    t = tList.first()
-                } else {
-                    val d1 = cumulativeDistances[insertionPoint - 1]
-                    val d2 = cumulativeDistances[insertionPoint]
-                    val t1 = tList[insertionPoint - 1]
-                    val t2 = tList[insertionPoint]
-                    val fraction = (distanceAlongCurve - d1) / (d2 - d1)
-                    t = t1 + fraction * (t2 - t1)
-                }
-            }
-            tValues.add(t)
+            cumDist += x0.origin.distance(x1o)
+            frames.add(Frame(t1, cumDist, x1o, x1t, x1a, x1n))
         }
     }
 
-    private fun distanceToT(distance: Double): Double {
-        // Map a distance along the curve to a parameter t
-        val clampedDistance = distance.coerceIn(0.0, totalArcLength)
-        val scaledDistance = clampedDistance / totalArcLength * (tValues.size - 1)
-        val lowerIndex = floor(scaledDistance).toInt().coerceAtMost(tValues.size - 1)
-        val upperIndex = (lowerIndex + 1).coerceAtMost(tValues.size - 1)
-
-        val tLower = tValues[lowerIndex]
-        val tUpper = tValues[upperIndex]
-
-        val fraction = scaledDistance - lowerIndex
-        return tLower + fraction * (tUpper - tLower)
-    }
-
+    @Serializable
+    data class Frame(
+        val t: Double,
+        val distance: Double,
+        @Serializable(with = Vector3dSerializer::class)
+        val origin: Vector3d,
+        @Serializable(with = Vector3dSerializer::class)
+        val tangent: Vector3d,
+        @Serializable(with = Vector3dSerializer::class)
+        val axis: Vector3d,
+        @Serializable(with = Vector3dSerializer::class)
+        val normal: Vector3d
+    )
 }
-
-/*
-Previous Position
-Current Position
-Target Position
-Progression: Double
-Duration: Int
-
-TransferState {
-    LOCKED,
-    POSITIONED,
-    MOVING,
-    CHANGING,
-    STOPPING,
-    STOPPED,
-    EMERGENCY
-}
-
-function easeInOutSine(x) {
-    return -(Math.cos(Math.PI * x) - 1) / 2;
-}
-
-function easeOutSine(x) {
-    return Math.sin((x * Math.PI) / 2);
-}
-
-https://nicmulvaney.com/easing#easeInOutBounce
-
-// Option
-Ease in > Linear > Ease out
-Ease in for X ticks
-Linear else
-Ease out for X ticks til end
-
-if STOP Ease out immediately
-after ease out set previous to current and target to new target
-
-tick() {
-    moving = Current != Target
-    if moving {
-        increment = 1 / Duration.toDouble() # Inc per tick
-        Progression += increment
-        if Progression >= 1.0 {
-            Current = Target
-        } else {
-            Current = Previous.lerp(Target, easeInOutSine(Progression))
-        }
-    }
-}
-
-move(target, duration) {
-    Previous = Current
-    Target = target
-    Duration = duration
-    Progression = 0.0
-}
-
- */

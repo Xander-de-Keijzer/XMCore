@@ -4,6 +4,7 @@ import io.papermc.paper.event.player.AsyncChatEvent
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.editor.event.ChatEvent
 import nl.xandermarc.mc.lib.extensions.plain
+import nl.xandermarc.mc.lib.utils.Manager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -11,8 +12,9 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.plugin.java.JavaPlugin
 
-object EditorManager: Listener {
+object EditorManager: Listener, Manager {
 
     private val editors = mutableListOf<Editor<*>>()
     private fun editor(player: Player, f: Editor<*>.() -> Unit) {
@@ -33,7 +35,11 @@ object EditorManager: Listener {
         }
     }
 
-    fun disable() {
+    override fun enable(plugin: JavaPlugin) {
+        //
+    }
+
+    override fun disable() {
         editors.forEach { it.close() }
         editors.clear()
     }

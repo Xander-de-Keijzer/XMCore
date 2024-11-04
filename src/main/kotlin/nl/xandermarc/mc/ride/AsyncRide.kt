@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.withLock
 import nl.xandermarc.mc.lib.area.Area
 import nl.xandermarc.mc.lib.extensions.*
 import nl.xandermarc.mc.ride.managers.RideManager
+import org.bukkit.plugin.java.JavaPlugin
 
 abstract class AsyncRide<T : Area>(
     name: String,
@@ -22,7 +23,7 @@ abstract class AsyncRide<T : Area>(
             field = value
         }
 
-    override fun enable() { asyncJob.joinAndLaunchReadJob("ride.enable.$name") {
+    override fun enable(plugin: JavaPlugin) { asyncJob.joinAndLaunchReadJob("ride.enable.$name") {
         ensureActive()
         require(RideManager.register(this@AsyncRide)) { "Ride $name could not be enabled by the RideManager." }
 

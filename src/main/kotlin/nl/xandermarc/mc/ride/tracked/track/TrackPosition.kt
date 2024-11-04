@@ -10,7 +10,7 @@ data class TrackPosition(
         var remainingDistance = if (direction) distance else -distance
 
         while (remainingDistance != 0.0) {
-            val segmentLength = trackSegment.totalArcLength
+            val segmentLength = trackSegment.path.length()
             val newPosition = position + remainingDistance
 
             if (newPosition > segmentLength) {
@@ -38,6 +38,6 @@ data class TrackPosition(
 
         trackSegment = nextSegment
         direction = if (reversed) !forward else forward
-        position = if (direction) 0.0 else trackSegment.totalArcLength
+        position = if (direction) 0.0 else trackSegment.path.length()
     }
 }
