@@ -1,18 +1,18 @@
-package nl.xandermarc.mc.ride.commands
+package nl.xandermarc.mc.core.commands
 
 import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands.literal
+import nl.xandermarc.mc.core.managers.EditorManager
+import nl.xandermarc.mc.core.managers.TrackManager
 import nl.xandermarc.mc.lib.commands.BrigadierCommand
-import nl.xandermarc.mc.lib.editor.EditorManager
 import nl.xandermarc.mc.lib.extensions.execute
 import nl.xandermarc.mc.lib.extensions.executePlayer
 import nl.xandermarc.mc.lib.extensions.getString
 import nl.xandermarc.mc.lib.extensions.stringArgument
-import nl.xandermarc.mc.ride.managers.TrackManager
 import nl.xandermarc.mc.ride.tracked.TrackEditor
 
-object TrackCommand : BrigadierCommand("track") {
+object OldTrackCommand : BrigadierCommand("track") {
     @Suppress("UnstableApiUsage")
     override val command: LiteralArgumentBuilder<CommandSourceStack> = root
         .then(

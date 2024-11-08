@@ -1,6 +1,7 @@
 package nl.xandermarc.test.network.packet
 
 import nl.xandermarc.mc.lib.extensions.warn
+import nl.xandermarc.test.NetworkManager
 import nl.xandermarc.test.network.packet.types.*
 import nl.xandermarc.test.network.packet.types.response.PacketResponseAccepted
 import nl.xandermarc.test.network.packet.types.response.PacketResponseAcknowledged
@@ -22,7 +23,7 @@ abstract class Packet(
         val listenerKey = try { responseKey }
         catch (e: IllegalStateException) { warn(e.message ?: "Failed to create a response key to listen to"); return }
 
-        nl.xandermarc.test.network.NetworkManager.onResponse(listenerKey, block)
+        NetworkManager.onResponse(listenerKey, block)
     }
     val key = listOf(
         direction.ordinal,

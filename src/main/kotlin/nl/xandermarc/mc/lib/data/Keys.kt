@@ -10,8 +10,9 @@ object Keys {
         override fun isInitialized() = namespacedKey != null
     }
 
+    val MARKER by LazyKey("xmc.marker")
+
     object Item {
-        val XMC by LazyKey("xmc.item")
         val UUID by LazyKey("xmc.item.uuid")
         val TEMP by LazyKey("xmc.item.temporary")
     }

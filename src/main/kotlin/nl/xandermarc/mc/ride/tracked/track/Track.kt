@@ -5,10 +5,8 @@ import kotlinx.serialization.Serializable
 import nl.xandermarc.mc.lib.extensions.debug
 import nl.xandermarc.mc.lib.extensions.encode
 import nl.xandermarc.mc.lib.extensions.info
-import nl.xandermarc.mc.lib.path.BezierPath
 import org.joml.Vector3d
 import kotlin.coroutines.coroutineContext
-import kotlin.random.Random
 
 @Serializable
 data class Track(

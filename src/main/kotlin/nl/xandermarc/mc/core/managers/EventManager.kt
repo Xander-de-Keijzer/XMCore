@@ -1,34 +1,41 @@
-package nl.xandermarc.mc.core
+package nl.xandermarc.mc.core.managers
 
 import io.netty.channel.Channel
-import nl.xandermarc.mc.ProtocolManager
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.data.Keys
 import nl.xandermarc.mc.lib.extensions.channel
 import nl.xandermarc.mc.lib.extensions.deserialize
 import nl.xandermarc.mc.lib.extensions.has
 import nl.xandermarc.mc.lib.utils.Manager
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
-import org.bukkit.event.player.*
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent
+import org.bukkit.event.player.PlayerJoinEvent
+import org.bukkit.event.player.PlayerLoginEvent
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
 
-object EventListener: Listener, Manager {
+object EventManager: Listener, Manager {
 
     @EventHandler
     private fun onQuit(event: PlayerQuitEvent) {
         event.quitMessage(Globals.QUIT_MESSAGE.deserialize(event.player.name))
-        onConnection(event)
+        removeTempItems(event.player)
     }
 
     @EventHandler
     private fun onJoin(event: PlayerJoinEvent) {
         event.joinMessage(Globals.JOIN_MESSAGE.deserialize(event.player.name))
-        onConnection(event)
-    }
-
-    private fun onConnection(event: PlayerEvent) {
-        event.player.inventory.removeAll { it.has(Keys.Item.TEMP) }
+        removeTempItems(event.player)
+        if (ProtocolManager.isClosed()) return
+        val channel: Channel = event.player.channel
+        (channel.pipeline().get(ProtocolManager.IDENTIFIER) as? ProtocolManager.PacketHandler)?.apply {
+            player = event.player
+            ProtocolManager.playerCache.remove(event.player.uniqueId)
+            return
+        }
+        ProtocolManager.getOrCreateHandler(channel).player = event.player
     }
 
     @EventHandler
@@ -45,29 +52,24 @@ object EventListener: Listener, Manager {
         ProtocolManager.playerCache[event.player.uniqueId] = event.player
     }
 
-    @EventHandler
-    fun onPlayerJoinEvent(event: PlayerJoinEvent) {
-        if (ProtocolManager.isClosed()) return
-        val channel: Channel = event.player.channel
-        (channel.pipeline().get(ProtocolManager.IDENTIFIER) as? ProtocolManager.PacketHandler)?.apply {
-            player = event.player
-            ProtocolManager.playerCache.remove(event.player.uniqueId)
-            return
-        }
-        ProtocolManager.getOrCreateHandler(channel).player = event.player
-    }
-
     override fun enable(plugin: JavaPlugin) {
-        plugin.server.pluginManager.registerEvents(EventListener, plugin)
+        plugin.server.pluginManager.registerEvents(EventManager, plugin)
+        plugin.server.onlinePlayers.forEach { player -> removeTempItems(player) }
     }
-
 
     override fun disable() {
+        Globals.players.forEach { player -> removeTempItems(player) }
         PlayerJoinEvent.getHandlerList().unregister(this)
         PlayerQuitEvent.getHandlerList().unregister(this)
         AsyncPlayerPreLoginEvent.getHandlerList().unregister(this)
         PlayerLoginEvent.getHandlerList().unregister(this)
         PlayerJoinEvent.getHandlerList().unregister(this)
+    }
+
+    private fun removeTempItems(player: Player) {
+        player.inventory.removeAll { item ->
+            item.has(Keys.Item.TEMP)
+        }
     }
 
 }

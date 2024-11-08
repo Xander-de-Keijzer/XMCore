@@ -1,8 +1,11 @@
 package nl.xandermarc.mc.ride.tracked.track
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import nl.xandermarc.mc.lib.path.NodePath
 import nl.xandermarc.mc.lib.serializers.Vector3dSerializer
+import nl.xandermarc.mc.ride.tracked.listeners.CartListener
+import nl.xandermarc.mc.ride.tracked.listeners.TrainListener
 import org.joml.Vector3d
 
 @Serializable
@@ -12,9 +15,21 @@ open class TrackSegment(
     val bConnected: Int? = null,
     val frames: MutableList<Frame> = mutableListOf(),
 ) {
+    @Transient
+    private var trainListener = TrainListener {}
+    private var cartListener = CartListener {}
+    var resolution: Int = 0
+    var length: Double = path.length()
+
+    fun onTrainTick(listener: TrainListener) { trainListener = listener }
+    fun onCartTick(listener: CartListener) { cartListener = listener }
+
     constructor(nodeA: Node, nodeB: Node) : this(NodePath(nodeA, nodeB))
 
     fun render(steps: Int) {
+        require(steps > 0) { "Can't render less than 1 step." }
+        if (steps < resolution) return
+
         var cumDist = 0.0
         val a = path.tangentAt(0.0).normalize()
         val b = path.secondDerivativeAt(0.0).add(a).normalize()
@@ -38,6 +53,8 @@ open class TrackSegment(
             cumDist += x0.origin.distance(x1o)
             frames.add(Frame(t1, cumDist, x1o, x1t, x1a, x1n))
         }
+        length = cumDist + frames.last().origin.distance(path.positionAt(1.0))
+        resolution = steps
     }
 
     @Serializable

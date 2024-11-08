@@ -3,11 +3,11 @@ package nl.xandermarc.mc.ride
 import nl.xandermarc.mc.lib.area.Area
 import nl.xandermarc.mc.lib.utils.Manager
 
-abstract class AbstractRide<T : Area>(
+abstract class Ride(
     val name: String,
-    val area: T
+    val area: Area
 ) : Manager {
-    open var state: State = State.DISABLED
+    var state: State = State.DISABLED
         protected set
     abstract fun reset()
     abstract fun update()

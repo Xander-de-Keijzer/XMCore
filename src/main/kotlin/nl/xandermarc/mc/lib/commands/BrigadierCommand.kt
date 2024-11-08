@@ -4,7 +4,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder
 import io.papermc.paper.command.brigadier.CommandSourceStack
 import io.papermc.paper.command.brigadier.Commands.literal
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents
-import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.utils.Executor
 import org.bukkit.plugin.java.JavaPlugin
 

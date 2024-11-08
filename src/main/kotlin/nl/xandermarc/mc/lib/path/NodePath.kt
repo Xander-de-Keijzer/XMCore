@@ -1,7 +1,9 @@
 package nl.xandermarc.mc.lib.path
 
 import kotlinx.serialization.Serializable
-import nl.xandermarc.mc.lib.extensions.*
+import nl.xandermarc.mc.lib.extensions.derivative
+import nl.xandermarc.mc.lib.extensions.evaluate
+import nl.xandermarc.mc.lib.extensions.secondDerivative
 import nl.xandermarc.mc.ride.tracked.track.Node
 import org.joml.Vector3d
 

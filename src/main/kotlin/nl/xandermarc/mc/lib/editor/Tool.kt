@@ -4,6 +4,7 @@ import nl.xandermarc.mc.lib.extensions.compare
 import nl.xandermarc.mc.lib.extensions.temp
 import org.bukkit.Material
 import org.bukkit.inventory.ItemStack
+import java.util.*
 
 data class Tool<T : Editor<T>>(
     private val material: Material,
@@ -11,7 +12,8 @@ data class Tool<T : Editor<T>>(
     val onLeftClick: Event<T, Unit> = EmptyEvent(),
     val onChat: Event<T, String> = EmptyEvent(),
 ) {
-    val item: ItemStack = temp(material)
+    val uuid: UUID = UUID.randomUUID()
+    val item: ItemStack = temp(material, uuid)
 
     sealed class Event<T, U>(val name: String? = null, private val action: T.(U) -> Unit = {}) {
         operator fun invoke(editor: T, context: U) = action.invoke(editor, context)

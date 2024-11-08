@@ -8,6 +8,7 @@ data class Train(
     var position: TrackPosition,
     var weight: Double
 ) {
+    var speed: Double = 0.0
     class Builder(var weight: Double) {
         private var id: Int = -1
         private lateinit var track: Track

@@ -1,21 +1,19 @@
 package nl.xandermarc.mc
 
-import nl.xandermarc.mc.core.EventListener
+import nl.xandermarc.mc.core.commands.TrackCommand
+import nl.xandermarc.mc.core.managers.*
 import nl.xandermarc.mc.lib.data.Globals
-import nl.xandermarc.mc.lib.editor.EditorManager
+import nl.xandermarc.mc.lib.extensions.completeAll
 import nl.xandermarc.mc.lib.extensions.pluginName
 import nl.xandermarc.mc.lib.utils.Manager
-import nl.xandermarc.mc.ride.commands.TrackCommand
-import nl.xandermarc.mc.ride.managers.RideManager
-import nl.xandermarc.mc.ride.managers.TrackManager
-import nl.xandermarc.test.network.TestCommand
-import nl.xandermarc.test.network.TestTrackedRide
+import nl.xandermarc.test.TestCommand
+import nl.xandermarc.test.TestTrackedRide
 import org.bukkit.plugin.java.JavaPlugin
 
 class XMCPlugin : JavaPlugin() {
 
     private val managers = listOf(
-        EventListener,
+        EventManager,
         ProtocolManager,
         TrackManager,
         RideManager,
@@ -25,7 +23,7 @@ class XMCPlugin : JavaPlugin() {
 
     private val executors = listOf(
         TestCommand,
-        TrackCommand
+        TrackCommand,
     )
 
     override fun onEnable() {
@@ -39,7 +37,7 @@ class XMCPlugin : JavaPlugin() {
     override fun onDisable() {
         logger.info("$pluginName is being disabled...")
         managers.reversed().forEach(Manager::disable)
-        Globals.supervisor.complete()
+        Globals.supervisor.completeAll()
         logger.info("$pluginName has been disabled.")
     }
 

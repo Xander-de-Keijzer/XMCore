@@ -1,10 +1,20 @@
 package nl.xandermarc.mc.lib.extensions
 
+import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
 import nl.xandermarc.mc.lib.data.Globals
 import org.bukkit.plugin.java.JavaPlugin
 import org.joml.Vector3d
 import kotlin.math.sqrt
+import kotlin.reflect.KClass
+import kotlin.reflect.KClassifier
+import kotlin.reflect.full.isSubclassOf
+import kotlin.reflect.jvm.jvmName
+
+inline fun <reified T> Any.asType(default: Any? = null, block: T.() -> Any?): Any? {
+    return (this as? T)?.run(block) ?: default
+}
 
 fun encode(a: Int, b: Int): Int {
     val (larger, smaller) = if (a > b) a to b else b to a
@@ -56,4 +66,21 @@ fun secondDerivative(p0: Vector3d, p1: Vector3d, p2: Vector3d, p3: Vector3d, t: 
     val term1 = p3.sub(p2.mul(2.0, Vector3d()), Vector3d()).add(p1).mul(6.0 * t)  // 6 * t * (P1 - 2*P2 + P3)
 
     return term0.add(term1)
+}
+
+fun KClass<*>.nameSuffix(suffix: String): String =
+    (simpleName ?: jvmName).lowercase().removeSuffix(suffix)
+
+fun KClassifier?.subclassOf(kClass: KClass<*>): Boolean =
+    (this as? KClass<*>)?.isSubclassOf(kClass) ?: false
+
+fun Audience.send(message: String, vararg args: Any) {
+    if (args.size == 1) {
+        sendMessage(Globals.message.deserialize(message, Placeholder.parsed("0", "<gold>${args.first()}<gray>")))
+    } else {
+        val placeholders = args.mapIndexed { index, arg ->
+            Placeholder.parsed("$index", "<gold>$arg<gray>")
+        }
+        sendMessage(Globals.message.deserialize(message, *placeholders.toTypedArray()))
+    }
 }

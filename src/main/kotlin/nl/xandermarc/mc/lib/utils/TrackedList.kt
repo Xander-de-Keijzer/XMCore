@@ -1,44 +1,45 @@
 package nl.xandermarc.mc.lib.utils
 
-import java.util.concurrent.locks.ReentrantLock
-import kotlin.concurrent.withLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
+import kotlin.concurrent.read
+import kotlin.concurrent.write
 
 class TrackedList<T> {
-    private val lock = ReentrantLock()
+    private val lock = ReentrantReadWriteLock()
     private val _items = mutableListOf<T>()
     private val toBeAdded = mutableSetOf<T>()
     private val toBeRemoved = mutableSetOf<T>()
-    val items: List<T> get() = _items.toList()
+    val items: List<T> get() = lock.read { _items.toList() }
 
-    fun add(item: T) = lock.withLock {
+    fun add(item: T) = lock.write {
         toBeRemoved.remove(item)
         if (!_items.contains(item)) {
             toBeAdded.add(item)
         }
     }
 
-    fun remove(item: T) = lock.withLock {
+    fun remove(item: T) = lock.write {
         toBeAdded.remove(item)
         if (_items.contains(item)) {
             toBeRemoved.add(item)
         }
     }
 
-    fun getAdded() = lock.withLock {
+    fun getAdded() = lock.write {
         toBeAdded.toList().apply {
             _items.addAll(this)
             toBeAdded.clear()
         }
     }
 
-    fun getRemoved() = lock.withLock {
+    fun getRemoved() = lock.write {
         toBeRemoved.toList().apply {
             _items.removeAll(toBeRemoved)
             toBeRemoved.clear()
         }
     }
 
-    fun clear() = lock.withLock {
+    fun clear() = lock.write {
         _items.clear()
         toBeAdded.clear()
         toBeRemoved.clear()

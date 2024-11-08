@@ -1,4 +1,4 @@
-package nl.xandermarc.test.network
+package nl.xandermarc.test
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
@@ -12,11 +12,11 @@ object NetworkManager {
         val block: (List<Any>) -> Unit,
         val started: Instant = Clock.System.now(),
     )
-    private val listeners = mutableListOf<nl.xandermarc.test.network.NetworkManager.PacketListener>()
+    private val listeners = mutableListOf<PacketListener>()
 
     fun onResponse(key: List<Int>, block: (List<Any>) -> Unit) {
-        nl.xandermarc.test.network.NetworkManager.listeners.add(
-            nl.xandermarc.test.network.NetworkManager.PacketListener(
+        listeners.add(
+            PacketListener(
                 key,
                 block
             )
@@ -24,10 +24,10 @@ object NetworkManager {
     }
     fun purge() {
         val now = Clock.System.now()
-        nl.xandermarc.test.network.NetworkManager.listeners.toList().filter {
+        listeners.toList().filter {
             (now - it.started) > Duration.parse("2m")
         }.forEach {
-            nl.xandermarc.test.network.NetworkManager.listeners.remove(it)
+            listeners.remove(it)
             Globals.logger.warn("Listener for packet ${it.key} timed out.")
         }
     }

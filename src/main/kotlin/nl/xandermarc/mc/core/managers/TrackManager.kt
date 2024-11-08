@@ -1,4 +1,4 @@
-package nl.xandermarc.mc.ride.managers
+package nl.xandermarc.mc.core.managers
 
 import nl.xandermarc.mc.lib.utils.Manager
 import nl.xandermarc.mc.ride.tracked.track.Track

@@ -1,4 +1,4 @@
-package nl.xandermarc.mc
+package nl.xandermarc.mc.core.managers
 
 import io.netty.channel.Channel
 import io.netty.channel.ChannelDuplexHandler
@@ -6,10 +6,8 @@ import io.netty.channel.ChannelHandlerContext
 import net.minecraft.network.Connection
 import net.minecraft.network.protocol.Packet
 import net.minecraft.server.MinecraftServer
-import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.channel
 import nl.xandermarc.mc.lib.utils.Manager
-import nl.xandermarc.mc.lib.utils.PlayerReceivePacketEvent
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -47,10 +45,7 @@ object ProtocolManager : Manager {
     }
 
     private fun onPacketReceiveAsync(player: Player, packet: Packet<*>): Packet<*>? {
-        if (!Globals.PACKET_EVENT_ENABLED) return packet
-        return PlayerReceivePacketEvent(packet, player).run {
-            if (callEvent()) this.packet else null
-        }
+        return packet
     }
 
     fun getOrCreateHandler(channel: Channel): PacketHandler {

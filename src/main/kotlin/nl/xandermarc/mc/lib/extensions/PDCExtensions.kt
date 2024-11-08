@@ -5,44 +5,65 @@ import nl.xandermarc.mc.lib.serializers.UUIDDataType
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
 import org.bukkit.inventory.ItemStack
+import org.bukkit.inventory.meta.ItemMeta
+import org.bukkit.persistence.PersistentDataContainer
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
-fun <P: Any, C: Any> ItemStack.set(key: NamespacedKey, type: PersistentDataType<P, C>, value: C) =
-    itemMeta?.persistentDataContainer?.set(key, type, value)
+/*
+    PersistentDataContainer
+ */
 
-fun ItemStack.set(key: NamespacedKey) = set(key, PersistentDataType.BYTE, 1)
+fun PersistentDataContainer.flag(key: NamespacedKey) = apply { set(key, PersistentDataType.BYTE, 1) }
+fun PersistentDataContainer.isMarked() = has(Keys.MARKER)
+fun PersistentDataContainer.mark() = apply { flag(Keys.MARKER) }
+fun PersistentDataContainer.unmark() = apply { remove(Keys.MARKER) }
 
-fun ItemStack.has(key: NamespacedKey) =
-    itemMeta?.persistentDataContainer?.has(key) ?: false
+/*
+    ItemMeta
+ */
 
-fun <P: Any, C: Any> ItemStack.get(key: NamespacedKey, type: PersistentDataType<P, C>) =
-    itemMeta?.persistentDataContainer?.get(key, type)
+fun <P: Any, C: Any> ItemMeta.set(key: NamespacedKey, type: PersistentDataType<P, C>, value: C) = apply {
+    persistentDataContainer.set(key, type, value)
+}
+fun ItemMeta.has(key: NamespacedKey) =
+    persistentDataContainer.has(key)
+fun <P: Any, C: Any> ItemMeta.get(key: NamespacedKey, type: PersistentDataType<P, C>): C? =
+    persistentDataContainer.get(key, type)
 
-fun item(material: Material) =
-    ItemStack(material).apply {
-        set(Keys.Item.XMC)
-    }
+fun ItemMeta.flag(key: NamespacedKey) = apply { persistentDataContainer.flag(key) }
+fun ItemMeta.isMarked() = persistentDataContainer.isMarked()
+fun ItemMeta.mark() = apply { persistentDataContainer.mark() }
+fun ItemMeta.unmark() = apply { persistentDataContainer.unmark() }
 
-fun temp(material: Material) =
-    item(material).apply {
-        set(Keys.Item.TEMP)
-    }
+/*
+    ItemStack
+ */
 
-fun item(material: Material, uuid: UUID) =
-    item(material).apply {
-        set(Keys.Item.UUID, UUIDDataType, uuid)
-    }
+fun <P: Any, C: Any> ItemStack.set(key: NamespacedKey, type: PersistentDataType<P, C>, value: C) = apply {
+    itemMeta.set(key, type, value)
+}
+fun ItemStack.has(key: NamespacedKey) = itemMeta.has(key)
+fun <P: Any, C: Any> ItemStack.get(key: NamespacedKey, type: PersistentDataType<P, C>): C? = itemMeta.get(key, type)
 
-fun temp(material: Material, uuid: UUID) =
-    item(material, uuid).apply {
-        set(Keys.Item.TEMP)
-    }
+fun ItemStack.flag(key: NamespacedKey) = apply { itemMeta.flag(key) }
+fun ItemStack.isMarked() = itemMeta.isMarked()
+fun ItemStack.mark() = apply { itemMeta.mark() }
+fun ItemStack.unmark() = apply { itemMeta.unmark() }
 
-fun ItemStack.isItem() = has(Keys.Item.XMC)
+/*
+    Utils
+ */
+
+fun item(material: Material) = ItemStack(material).mark()
+fun item(material: Material, uuid: UUID) = item(material).set(Keys.Item.UUID, UUIDDataType, uuid)
+
+fun temp(material: Material) = item(material).flag(Keys.Item.TEMP)
+fun temp(material: Material, uuid: UUID) = item(material, uuid).flag(Keys.Item.TEMP)
+
 fun ItemStack.hasUUID() = has(Keys.Item.UUID)
 fun ItemStack.getUUID() = get(Keys.Item.UUID, UUIDDataType)
-fun ItemStack.isItem(uuid: UUID) = hasUUID() && getUUID() == uuid
+fun ItemStack.hasUUid(uuid: UUID) = hasUUID() && getUUID() == uuid
 
 fun ItemStack.compare(other: Any?): Boolean {
     if (this === other) return true

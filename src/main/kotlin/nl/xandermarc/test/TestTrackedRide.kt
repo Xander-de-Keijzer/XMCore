@@ -1,16 +1,19 @@
-package nl.xandermarc.test.network
+package nl.xandermarc.test
 
 import nl.xandermarc.mc.lib.area.CuboidArea
 import nl.xandermarc.mc.ride.tracked.TrackedRide
 import nl.xandermarc.mc.ride.tracked.Train
+import nl.xandermarc.mc.ride.tracked.modules.TrimBrakeModule
 import org.joml.Vector3d
 
-object TestTrackedRide : TrackedRide<CuboidArea>(
+object TestTrackedRide : TrackedRide(
     "test",
     CuboidArea(Vector3d(), Vector3d())
 ) { // Define carts sizes models etc
     override suspend fun loadAsync() {
-        loadTrack("test_track")
+        loadTrack("test_track") {
+            segment(1).onTrainTick(TrimBrakeModule(10.0, 1.0))
+        }
         loadTrack("another_track")
     }
 

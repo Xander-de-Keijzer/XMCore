@@ -1,7 +1,8 @@
-package nl.xandermarc.mc.lib.editor
+package nl.xandermarc.mc.core.managers
 
 import io.papermc.paper.event.player.AsyncChatEvent
 import nl.xandermarc.mc.lib.data.Globals
+import nl.xandermarc.mc.lib.editor.Editor
 import nl.xandermarc.mc.lib.editor.event.ChatEvent
 import nl.xandermarc.mc.lib.extensions.plain
 import nl.xandermarc.mc.lib.utils.Manager

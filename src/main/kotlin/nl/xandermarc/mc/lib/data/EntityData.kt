@@ -15,12 +15,11 @@ import kotlin.reflect.KClass
 import kotlin.reflect.jvm.isAccessible
 import kotlin.reflect.jvm.jvmName
 
-@Suppress("unused")
+@Suppress("UNCHECKED_CAST", "UNUSED")
 data object EntityData {
     private fun KClass<*>.member(name: String): KCallable<*> =
         members.firstOrNull { it.name == name } ?: throw NoSuchFieldException("$jvmName.$name")
 
-    @Suppress("UNCHECKED_CAST")
     private fun <T> entityDataId(kClass: KClass<*>, name: String) =
         kClass.member(name).apply { isAccessible = true }.call() as EntityDataAccessor<T>
 

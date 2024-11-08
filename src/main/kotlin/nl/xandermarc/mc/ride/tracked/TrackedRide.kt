@@ -1,19 +1,16 @@
 package nl.xandermarc.mc.ride.tracked
 
 import kotlinx.coroutines.ensureActive
+import nl.xandermarc.mc.core.managers.TrackManager
 import nl.xandermarc.mc.lib.area.Area
 import nl.xandermarc.mc.lib.extensions.debugAll
 import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.ride.AsyncRide
-import nl.xandermarc.mc.ride.managers.TrackManager
 import nl.xandermarc.mc.ride.tracked.track.Track
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.coroutineContext
 
-abstract class TrackedRide<T : Area>(
-    rideName: String,
-    area: T
-) : AsyncRide<T>(rideName, area) {
+abstract class TrackedRide(rideName: String, area: Area) : AsyncRide(rideName, area) {
     private val nextTrainId = AtomicInteger(1)
     private val tracks = mutableListOf<Track>()
     private val trains = mutableListOf<Train>()
@@ -58,7 +55,7 @@ abstract class TrackedRide<T : Area>(
         track(name)?.let { f(it) }
     }
 
-    protected fun Track.segment(id: Int) = segments[id]
+    protected fun Track.segment(id: Int) = segments[id] ?: throw IllegalArgumentException("No segment for id $id")
 
     override fun update() {
         trains.debugAll { "Sync: $this" }
