@@ -1,11 +1,9 @@
 package nl.xandermarc.mc.core.managers
 
 import io.papermc.paper.event.player.AsyncChatEvent
+import nl.xandermarc.mc.lib.AbstractEditor
 import nl.xandermarc.mc.lib.data.Globals
-import nl.xandermarc.mc.lib.editor.Editor
-import nl.xandermarc.mc.lib.editor.event.ChatEvent
 import nl.xandermarc.mc.lib.extensions.plain
-import nl.xandermarc.mc.lib.utils.Manager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -13,35 +11,27 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent
 import org.bukkit.event.player.PlayerInteractEntityEvent
 import org.bukkit.event.player.PlayerInteractEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.plugin.java.JavaPlugin
 
-object EditorManager: Listener, Manager {
+object EditorManager: Listener {
+    private val editors = mutableListOf<AbstractEditor<*>>()
 
-    private val editors = mutableListOf<Editor<*>>()
-    private fun editor(player: Player, f: Editor<*>.() -> Unit) {
-        editors.filter { it.player == player }.forEach { f(it) }
-    }
+    fun register(editor: AbstractEditor<*>) = editors.add(editor)
+    fun has(player: Player): Boolean = editors.any { it.player == player }
+    fun unregister(editor: AbstractEditor<*>) = editors.remove(editor)
 
-    fun registerEditor(editor: Editor<*>) {
-        editors.add(editor)
-    }
-
-    fun hasEditor(player: Player): Boolean =
-        editors.any { it.player == player }
-
-    fun closeEditor(player: Player) {
-        editor(player) {
-            close()
-            editors.remove(this)
+    fun closeAll(player: Player) {
+        editors.filter {
+            it.player == player
+        }.forEach {
+            it.close()
         }
+        if (editors.any { it.player == player })
+            throw IllegalStateException("Editors(${editors.filter { it.player == player }}) belonging to ${player.name} were still present after closing.")
     }
-
-    override fun enable(plugin: JavaPlugin) {
-        //
-    }
-
-    override fun disable() {
+    fun closeAll() {
         editors.forEach { it.close() }
+        if (editors.isNotEmpty())
+            throw IllegalStateException("Editors($editors) were still present after closing.")
         editors.clear()
     }
 
@@ -62,19 +52,19 @@ object EditorManager: Listener, Manager {
 
     @EventHandler
     private fun chatEvent(event: AsyncChatEvent) {
-        editor(event.player) {
-            call(
-                ChatEvent(
-                event.player.inventory.itemInMainHand,
-                event.message().plain()
-            )
+        editors.filter { it.player == event.player }.forEach {
+            it.call(
+                AbstractEditor.ChatEvent(
+                    event.player.inventory.itemInMainHand,
+                    event.message().plain()
+                )
             )
         }
     }
 
     @EventHandler
     private fun playerQuit(event: PlayerQuitEvent) {
-        closeEditor(event.player)
+        closeAll(event.player)
     }
 
 }

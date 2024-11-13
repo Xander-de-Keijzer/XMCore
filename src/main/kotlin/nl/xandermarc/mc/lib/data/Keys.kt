@@ -3,18 +3,14 @@ package nl.xandermarc.mc.lib.data
 import org.bukkit.NamespacedKey
 
 object Keys {
-    private class LazyKey(private val key: String) : Lazy<NamespacedKey> {
-        private var namespacedKey: NamespacedKey? = null
-        private fun createKey(): NamespacedKey = NamespacedKey(Globals.instance, key).apply { namespacedKey = this }
-        override val value: NamespacedKey get() = namespacedKey ?: createKey()
-        override fun isInitialized() = namespacedKey != null
-    }
+    private val lazyMap = HashMap<String, NamespacedKey>()
+    fun lazy(key: String) = lazyMap.getOrPut(key) { key(key) }
+    fun key(key: String) = NamespacedKey(Globals.instance, key)
 
-    val MARKER by LazyKey("xmc.marker")
+    val MARKER = key("xmc.marker")
 
     object Item {
-        val UUID by LazyKey("xmc.item.uuid")
-        val TEMP by LazyKey("xmc.item.temporary")
+        val UUID = key("xmc.item.uuid")
+        val TEMP = key("xmc.item.temporary")
     }
-
 }

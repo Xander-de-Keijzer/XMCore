@@ -1,0 +1,11 @@
+messages:
+  join: "<green><0> joined the game"
+  quit: "<red><0> left the game"
+defaults:
+  world: "world"
+  location:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    yaw: 0.0
+    pitch: 0.0

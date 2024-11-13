@@ -1,9 +1,9 @@
 package nl.xandermarc.mc.lib.path
 
 import kotlinx.serialization.Serializable
-import nl.xandermarc.mc.lib.extensions.derivative
-import nl.xandermarc.mc.lib.extensions.evaluate
-import nl.xandermarc.mc.lib.extensions.secondDerivative
+import nl.xandermarc.mc.lib.Math.derivative
+import nl.xandermarc.mc.lib.Math.evaluate
+import nl.xandermarc.mc.lib.Math.secondDerivative
 import nl.xandermarc.mc.lib.serializers.Vector3dSerializer
 import org.joml.Vector3d
 

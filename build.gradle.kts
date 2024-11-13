@@ -1,8 +1,13 @@
 plugins {
-    kotlin("jvm") version "2.0.20"
-    kotlin("plugin.serialization") version "2.0.20"
+    kotlin("jvm") version "2.0.21"
+    kotlin("plugin.serialization") version "2.0.21"
+    id("io.ktor.plugin") version "3.0.1"
     id("io.papermc.paperweight.userdev") version "1.7.3"
     id("xyz.jpenilla.run-paper") version "2.3.1"
+}
+
+application {
+    mainClass.set("io.ktor.server.netty.EngineMain")
 }
 
 group = "nl.xandermarc"
@@ -20,6 +25,8 @@ val exposedVersion: String by project
 val serializationVersion: String by project
 val coroutinesVersion: String by project
 val h2Version: String by project
+val kotlinVersion: String by project
+val logbackVersion: String by project
 
 dependencies {
     paperweight.paperDevBundle(minecraftVersion)
@@ -44,16 +51,33 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
     implementation("com.h2database:h2:$h2Version")
 
+    // Ktor
+    implementation("io.ktor:ktor-server-core-jvm")
+    implementation("io.ktor:ktor-server-config-yaml")
+    implementation("io.ktor:ktor-server-host-common-jvm")
+    implementation("io.ktor:ktor-server-websockets-jvm")
+    implementation("io.ktor:ktor-server-content-negotiation-jvm")
+    implementation("io.ktor:ktor-server-netty-jvm")
+    implementation("io.ktor:ktor-serialization-kotlinx-json-jvm")
+    implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("io.ktor:ktor-client-websockets")
+    implementation("io.ktor:ktor-client-cio-jvm:3.0.1")
+
     // Include
     includeInJar(kotlin("reflect"))
     includeInJar("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     includeInJar("org.jetbrains.kotlinx:kotlinx-serialization-core:$serializationVersion")
     includeInJar("org.jetbrains.kotlinx:kotlinx-serialization-json:$serializationVersion")
     includeInJar("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:$serializationVersion")
+    includeInJar("org.jetbrains.exposed:exposed-core:$exposedVersion")
+    includeInJar("org.jetbrains.exposed:exposed-dao:$exposedVersion")
+    includeInJar("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
+    includeInJar("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
+    includeInJar("com.h2database:h2:$h2Version")
 }
 
 tasks.jar {
-    duplicatesStrategy = DuplicatesStrategy.WARN
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     from(includeInJar.map { if (it.isDirectory) it else zipTree(it) })
 }
 

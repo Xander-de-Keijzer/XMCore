@@ -1,6 +1,6 @@
 package nl.xandermarc.mc.lib.area
 
-import nl.xandermarc.mc.lib.utils.TrackedList
+import nl.xandermarc.mc.lib.TrackedList
 import org.joml.Vector3d
 
 class TrackedArea<T : Area, U>(

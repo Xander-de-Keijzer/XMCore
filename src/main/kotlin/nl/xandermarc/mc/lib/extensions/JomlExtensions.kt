@@ -1,3 +1,5 @@
+@file:JvmName("Extensions")
+@file:JvmMultifileClass
 package nl.xandermarc.mc.lib.extensions
 
 import nl.xandermarc.mc.lib.data.Globals
@@ -27,6 +29,9 @@ fun Vector3f.toLocation(world: String) = toLocation(Globals.server.getWorld(worl
 fun Location.toVector3d() = Vector3d(x, y, z)
 fun Location.toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 
+fun Location.yaw(yaw: Double) = apply { setYaw(yaw.toFloat()) }
+fun Location.pitch(pitch: Double) = apply { setPitch(pitch.toFloat()) }
+
 fun Vector3f.toVector3d() = Vector3d(this)
 fun Vector3d.toVector3f() = Vector3f(x.toFloat(), y.toFloat(), z.toFloat())
 
@@ -51,5 +56,6 @@ fun Quaterniond.rotateYawPitchRoll(yawDegrees: Double, pitchDegrees: Double, rol
     z = cy * sp * cr - sy * cp * sr
     return this
 }
+
 fun Quaternionf.rotateYawPitchRoll(yawDegrees: Double, pitchDegrees: Double, rollDegrees: Double): Quaternionf =
     toQuaterniond().rotateYawPitchRoll(yawDegrees, pitchDegrees, rollDegrees).toQuaternionf()

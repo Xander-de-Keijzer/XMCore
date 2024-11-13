@@ -14,7 +14,6 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 /*
@@ -25,6 +24,15 @@ fun userJoined(uuid: UUID, username: String) {
         val user =
             User.findById(uuid)?.apply { this.username = username } ?: User.new(uuid) { this.username = username }
         UserSession.new { this.user = user }
+    }
+}
+
+fun userJoinedAsync(uuid: UUID, username: String) {
+    asyncTransaction {
+        val user = User.findById(uuid)?.apply { this.username = username }
+            ?: User.new(uuid) { this.username = username }
+        UserSession.new { this.user = user }
+        println(user)
     }
 }
 
@@ -67,7 +75,10 @@ fun testDatabase() {
     userJoined(uuid1, "User1")
     userJoined(uuid2, "User2")
     userQuit(uuid1)
-    userJoined(uuid1, "User3")
+
+    transaction { User.all().forEach { println(it.toString()) } }
+    userJoinedAsync(uuid1, "User3")
+    transaction { User.all().forEach { println(it.toString()) } }
 
     coerceSessions()
 

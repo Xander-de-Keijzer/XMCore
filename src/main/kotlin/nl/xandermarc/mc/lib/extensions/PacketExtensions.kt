@@ -1,3 +1,5 @@
+@file:JvmName("Extensions")
+@file:JvmMultifileClass
 package nl.xandermarc.mc.lib.extensions
 
 import io.netty.buffer.Unpooled

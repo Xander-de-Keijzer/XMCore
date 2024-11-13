@@ -28,7 +28,7 @@ object NetworkManager {
             (now - it.started) > Duration.parse("2m")
         }.forEach {
             listeners.remove(it)
-            Globals.logger.warn("Listener for packet ${it.key} timed out.")
+            Globals.logger.warn { "Listener for packet ${it.key} timed out." }
         }
     }
 }

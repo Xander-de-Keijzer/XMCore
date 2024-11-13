@@ -1,16 +1,17 @@
 package nl.xandermarc.mc.lib.path
 
 import kotlinx.serialization.Serializable
-import nl.xandermarc.mc.lib.extensions.derivative
-import nl.xandermarc.mc.lib.extensions.evaluate
-import nl.xandermarc.mc.lib.extensions.secondDerivative
-import nl.xandermarc.mc.ride.tracked.track.Node
+import nl.xandermarc.mc.lib.Math.derivative
+import nl.xandermarc.mc.lib.Math.evaluate
+import nl.xandermarc.mc.lib.Math.secondDerivative
+import nl.xandermarc.mc.ride.Track
 import org.joml.Vector3d
 
+@Deprecated("Track should render without this class")
 @Serializable
 data class NodePath(
-    val nodeA: Node,
-    val nodeB: Node,
+    val nodeA: Track.Node,
+    val nodeB: Track.Node,
 ) : Path() {
     private val p0 get() = nodeA.location
     private val p1 get() = nodeA.location

@@ -1,12 +1,17 @@
+@file:JvmName("Extensions")
+@file:JvmMultifileClass
 package nl.xandermarc.mc.lib.extensions
 
 import nl.xandermarc.mc.lib.data.Keys
 import nl.xandermarc.mc.lib.serializers.UUIDDataType
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
+import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataContainer
+import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
@@ -18,6 +23,14 @@ fun PersistentDataContainer.flag(key: NamespacedKey) = apply { set(key, Persiste
 fun PersistentDataContainer.isMarked() = has(Keys.MARKER)
 fun PersistentDataContainer.mark() = apply { flag(Keys.MARKER) }
 fun PersistentDataContainer.unmark() = apply { remove(Keys.MARKER) }
+
+fun PersistentDataContainer.setInt(key: NamespacedKey, value: Int) = apply { set(key, PersistentDataType.INTEGER, value) }
+fun PersistentDataContainer.setStr(key: NamespacedKey, value: String) = apply { set(key, PersistentDataType.STRING, value) }
+fun PersistentDataContainer.setDbl(key: NamespacedKey, value: Double) = apply { set(key, PersistentDataType.DOUBLE, value) }
+
+fun PersistentDataContainer.getInt(key: NamespacedKey): Int? = get(key, PersistentDataType.INTEGER)
+fun PersistentDataContainer.getStr(key: NamespacedKey): String? = get(key, PersistentDataType.STRING)
+fun PersistentDataContainer.getDbl(key: NamespacedKey): Double? = get(key, PersistentDataType.DOUBLE)
 
 /*
     ItemMeta
@@ -70,4 +83,14 @@ fun ItemStack.compare(other: Any?): Boolean {
     if (other !is ItemStack) return false
     if (!hasUUID() || !other.hasUUID()) return false
     return getUUID() == other.getUUID()
+}
+
+abstract class PDCHolder : PersistentDataHolder {
+    companion object {
+        private val DATA_TYPE_REGISTRY: CraftPersistentDataTypeRegistry = CraftPersistentDataTypeRegistry()
+    }
+    protected fun newContainer(): PersistentDataContainer {
+        return CraftPersistentDataContainer(DATA_TYPE_REGISTRY)
+    }
+    protected abstract val container: PersistentDataContainer
 }

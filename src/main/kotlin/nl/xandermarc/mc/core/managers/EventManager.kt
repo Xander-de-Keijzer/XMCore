@@ -1,12 +1,13 @@
 package nl.xandermarc.mc.core.managers
 
 import io.netty.channel.Channel
+import nl.xandermarc.mc.lib.data.Config
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.data.Keys
 import nl.xandermarc.mc.lib.extensions.channel
-import nl.xandermarc.mc.lib.extensions.deserialize
+import nl.xandermarc.mc.lib.extensions.component
 import nl.xandermarc.mc.lib.extensions.has
-import nl.xandermarc.mc.lib.utils.Manager
+import nl.xandermarc.mc.lib.interfaces.Manager
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -20,13 +21,13 @@ object EventManager: Listener, Manager {
 
     @EventHandler
     private fun onQuit(event: PlayerQuitEvent) {
-        event.quitMessage(Globals.QUIT_MESSAGE.deserialize(event.player.name))
+        event.quitMessage(Config.Messages.QUIT.component(event.player.name))
         removeTempItems(event.player)
     }
 
     @EventHandler
     private fun onJoin(event: PlayerJoinEvent) {
-        event.joinMessage(Globals.JOIN_MESSAGE.deserialize(event.player.name))
+        event.joinMessage(Config.Messages.JOIN.component(event.player.name))
         removeTempItems(event.player)
         if (ProtocolManager.isClosed()) return
         val channel: Channel = event.player.channel
@@ -52,18 +53,20 @@ object EventManager: Listener, Manager {
         ProtocolManager.playerCache[event.player.uniqueId] = event.player
     }
 
-    override fun enable(plugin: JavaPlugin) {
+    override fun enable(plugin: JavaPlugin): Manager {
         plugin.server.pluginManager.registerEvents(EventManager, plugin)
         plugin.server.onlinePlayers.forEach { player -> removeTempItems(player) }
+        return this
     }
 
-    override fun disable() {
+    override fun disable(): Manager {
         Globals.players.forEach { player -> removeTempItems(player) }
         PlayerJoinEvent.getHandlerList().unregister(this)
         PlayerQuitEvent.getHandlerList().unregister(this)
         AsyncPlayerPreLoginEvent.getHandlerList().unregister(this)
         PlayerLoginEvent.getHandlerList().unregister(this)
         PlayerJoinEvent.getHandlerList().unregister(this)
+        return this
     }
 
     private fun removeTempItems(player: Player) {

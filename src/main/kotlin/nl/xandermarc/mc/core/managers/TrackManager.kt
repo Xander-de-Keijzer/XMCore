@@ -1,25 +1,18 @@
 package nl.xandermarc.mc.core.managers
 
-import nl.xandermarc.mc.lib.utils.Manager
-import nl.xandermarc.mc.ride.tracked.track.Track
-import org.bukkit.plugin.java.JavaPlugin
-import java.util.concurrent.ConcurrentHashMap
+import io.ktor.util.collections.*
+import nl.xandermarc.mc.ride.Track
 
-object TrackManager : Manager {
-    private val tracks = ConcurrentHashMap<String, Track>()
+object TrackManager {
+    private val tracks = ConcurrentSet<Track>()
 
-    fun exists(trackName: String) = tracks.containsKey(trackName)
-    fun get(trackName: String) = tracks[trackName]
-    fun create(trackName: String) = tracks.computeIfAbsent(trackName) { Track(trackName) }
-    fun remove(trackName: String) = tracks.remove(trackName)
-    fun remove(track: Track) = tracks.remove(track.name)
-    fun purgeEmpty() = tracks.entries.removeIf { it.value.isEmpty() }
+    fun has(trackName: String) = tracks.any { it.name == trackName }
+    fun has(track: Track) = tracks.contains(track)
+    fun get(trackName: String) = tracks.firstOrNull { it.name == trackName }
+    fun put(track: Track) = tracks.add(track)
+    fun getOrCreate(trackName: String) = get(trackName) ?: Track(trackName).apply { tracks.add(this) }
+    fun remove(track: Track) = tracks.remove(track)
+    fun remove(trackName: String) = get(trackName)?.apply { remove(this) }
 
-    override fun enable(plugin: JavaPlugin) {
-        // TODO Load tracks from persistent storage
-    }
-
-    override fun disable() {
-        // TODO Save tracks to persistent storage
-    }
+    fun purgeEmpty() = tracks.removeIf { it.nodes.isEmpty() }
 }

@@ -1,3 +1,5 @@
+@file:JvmName("Extensions")
+@file:JvmMultifileClass
 package nl.xandermarc.mc.lib.extensions
 
 const val DEGREES_TO_RADIANS_D = 0.017453292519943295

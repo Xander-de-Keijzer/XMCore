@@ -7,7 +7,7 @@ import net.minecraft.network.Connection
 import net.minecraft.network.protocol.Packet
 import net.minecraft.server.MinecraftServer
 import nl.xandermarc.mc.lib.extensions.channel
-import nl.xandermarc.mc.lib.utils.Manager
+import nl.xandermarc.mc.lib.interfaces.Manager
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
@@ -27,12 +27,13 @@ object ProtocolManager : Manager {
 
     fun isClosed(): Boolean = closed.get()
 
-    override fun enable(plugin: JavaPlugin) {
+    override fun enable(plugin: JavaPlugin): Manager {
         plugin.server.onlinePlayers.forEach { getOrCreateHandler(it.channel).player = it }
+        return this
     }
 
-    override fun disable() {
-        if (closed.getAndSet(true)) return
+    override fun disable(): Manager {
+        if (closed.getAndSet(true)) return this
         synchronized(serverConnection) {
             injectedChannels.forEach {
                 try {
@@ -42,6 +43,7 @@ object ProtocolManager : Manager {
         }
         playerCache.clear()
         injectedChannels.clear()
+        return this
     }
 
     private fun onPacketReceiveAsync(player: Player, packet: Packet<*>): Packet<*>? {
