@@ -1,6 +1,5 @@
 package nl.xandermarc.test.network
 
-import MapSerializer
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -15,6 +14,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.extensions.launchAsync
+import nl.xandermarc.mc.lib.serializers.MapSerializer
 import java.net.SocketException
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
@@ -71,7 +71,7 @@ enum class Packet(
         val uid: Int,
         val sender: Connector,
         val receiver: Connector,
-        @Serializable(with=MapSerializer::class)
+        @Serializable(with= MapSerializer::class)
         val data: Map<String, @Contextual Any?>
     ) {
         var isSent = false

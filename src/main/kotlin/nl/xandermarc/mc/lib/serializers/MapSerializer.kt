@@ -1,3 +1,5 @@
+package nl.xandermarc.mc.lib.serializers
+
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.descriptors.PrimitiveKind

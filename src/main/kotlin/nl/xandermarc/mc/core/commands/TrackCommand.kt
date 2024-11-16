@@ -24,6 +24,10 @@ object TrackCommand : Command() {
         source.send("Track <0> removed.", track)
     }
 
+    fun list() {
+        source.send("Tracks: <0>.", TrackManager.names().joinToString(", "))
+    }
+
     @PlayerOnly fun edit(@Greedy("_") @Lower track: String) {
         if (!TrackManager.has(track)) return player.send("Track <0> does not exist!", track)
 

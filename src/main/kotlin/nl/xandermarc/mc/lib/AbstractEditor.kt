@@ -1,7 +1,6 @@
 package nl.xandermarc.mc.lib
 
 import nl.xandermarc.mc.core.managers.EditorManager
-import nl.xandermarc.mc.lib.extensions.getUUID
 import nl.xandermarc.mc.lib.extensions.hasUUID
 import nl.xandermarc.mc.lib.extensions.temp
 import org.bukkit.Material
@@ -9,7 +8,11 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-abstract class AbstractEditor<T>(val instance: T, val player: Player, vararg toolMaps: Map<Int, Tool<T>>) {
+abstract class AbstractEditor<T>(
+    private val instance: T,
+    val player: Player,
+    vararg toolMaps: Map<Int, Tool<T>>
+) {
     private val toolMapList = toolMaps.toList()
     private var toolMapIterator = toolMapList.iterator()
 
@@ -67,8 +70,7 @@ abstract class AbstractEditor<T>(val instance: T, val player: Player, vararg too
         val item: ItemStack = temp(material, uuid)
         fun isItem(item: ItemStack): Boolean {
             if (item === this.item) return true
-            if (!item.hasUUID()) return false
-            return item.getUUID() == uuid
+            return item.hasUUID(uuid)
         }
     }
 

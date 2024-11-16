@@ -23,9 +23,9 @@ inline fun measureMillis(block: (PreviousHolder) -> Unit): Long {
 
 fun Any.complete(previous: PreviousHolder, builder: (String) -> String) {
     val diff = System.nanoTime() - previous.nano
-    if (diff > 1000000) Globals.logger.info(builder("%.3f ms".format(diff.toDouble()/1000000)))
-    else if (diff > 1000) Globals.logger.info(builder("%.3f us".format(diff.toDouble()/1000)))
-    else Globals.logger.info(builder("$diff ns"))
+    if (diff > 1000000) Globals.logger.fine(builder("%.3f ms".format(diff.toDouble()/1000000)))
+    else if (diff > 1000) Globals.logger.fine(builder("%.3f us".format(diff.toDouble()/1000)))
+    else Globals.logger.fine(builder("$diff ns"))
     previous.nano = System.nanoTime()
 }
 

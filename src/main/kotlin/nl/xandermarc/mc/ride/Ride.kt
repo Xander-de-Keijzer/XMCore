@@ -4,7 +4,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.xandermarc.mc.core.managers.TrackManager
 import nl.xandermarc.mc.lib.Math.encode
+import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.extensions.launchAsync
+import nl.xandermarc.mc.lib.extensions.vec3d
 
 abstract class Ride(
     val name: String
@@ -27,7 +29,7 @@ abstract class Ride(
         state = State.ENABLING
         load()
         state = State.ENABLED
-        println("Enabled")
+        info { "Ride $name has been enabled." }
     }
 
     fun disable() = launch {
@@ -35,7 +37,7 @@ abstract class Ride(
         state = State.DISABLING
         unload()
         state = State.DISABLED
-        println("Disabled")
+        info { "Ride $name has been disabled." }
     }
 
     fun reset() = launch {
@@ -47,7 +49,7 @@ abstract class Ride(
         state = State.ENABLING
         load()
         state = State.ENABLED
-        println("Reset")
+        info { "Ride $name has been reset." }
     }
 
     private fun unload() {
@@ -74,6 +76,17 @@ abstract class Ride(
     ) {
         val track = TrackManager.getOrCreate(name) ?:
             throw IllegalStateException("Track $name does not exist.")
+        for (i in (1..10)) {
+            track.nodes[i] = Track.Node(vec3d(), vec3d(), 2.0)
+        }
+        for (i in (1..10)){
+            val a = (1..10).random()
+            val b = (1..10).random()
+            if (a==b) continue
+            val segmentId = encode(a, b)
+            if (track.segments.containsKey(segmentId)) continue
+            track.segments[segmentId] = Track.Segment(listOf())
+        }
         tracks[name] = track
         block(track)
     }

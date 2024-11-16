@@ -13,6 +13,7 @@ object TrackManager {
     fun getOrCreate(trackName: String) = get(trackName) ?: Track(trackName).apply { tracks.add(this) }
     fun remove(track: Track) = tracks.remove(track)
     fun remove(trackName: String) = get(trackName)?.apply { remove(this) }
+    fun names() = tracks.map { it.name }
 
     fun purgeEmpty() = tracks.removeIf { it.nodes.isEmpty() }
 }

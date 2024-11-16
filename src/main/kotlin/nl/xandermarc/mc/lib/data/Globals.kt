@@ -1,6 +1,5 @@
 package nl.xandermarc.mc.lib.data
 
-import MapSerializer
 import kotlinx.coroutines.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
@@ -8,6 +7,7 @@ import kotlinx.serialization.modules.contextual
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
 import nl.xandermarc.mc.lib.extensions.syncExecutor
+import nl.xandermarc.mc.lib.serializers.MapSerializer
 import org.bukkit.Location
 import org.bukkit.Server
 import org.bukkit.World
@@ -43,7 +43,6 @@ object Globals {
     }
 
     // Coroutines
-    val jobs = hashMapOf<Job, String>()
     val supervisor = SupervisorJob()
     val syncScope = CoroutineScope(syncExecutor.asCoroutineDispatcher() + supervisor)
     val asyncScope = CoroutineScope(Dispatchers.IO + supervisor)

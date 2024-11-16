@@ -6,12 +6,9 @@ import nl.xandermarc.mc.lib.data.Keys
 import nl.xandermarc.mc.lib.serializers.UUIDDataType
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
-import org.bukkit.craftbukkit.persistence.CraftPersistentDataContainer
-import org.bukkit.craftbukkit.persistence.CraftPersistentDataTypeRegistry
 import org.bukkit.inventory.ItemStack
 import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.persistence.PersistentDataContainer
-import org.bukkit.persistence.PersistentDataHolder
 import org.bukkit.persistence.PersistentDataType
 import java.util.*
 
@@ -20,7 +17,7 @@ import java.util.*
  */
 
 fun PersistentDataContainer.flag(key: NamespacedKey) = apply { set(key, PersistentDataType.BYTE, 1) }
-fun PersistentDataContainer.isMarked() = has(Keys.MARKER)
+fun PersistentDataContainer.hasMark() = has(Keys.MARKER)
 fun PersistentDataContainer.mark() = apply { flag(Keys.MARKER) }
 fun PersistentDataContainer.unmark() = apply { remove(Keys.MARKER) }
 
@@ -45,7 +42,7 @@ fun <P: Any, C: Any> ItemMeta.get(key: NamespacedKey, type: PersistentDataType<P
     persistentDataContainer.get(key, type)
 
 fun ItemMeta.flag(key: NamespacedKey) = apply { persistentDataContainer.flag(key) }
-fun ItemMeta.isMarked() = persistentDataContainer.isMarked()
+fun ItemMeta.hasMark() = persistentDataContainer.hasMark()
 fun ItemMeta.mark() = apply { persistentDataContainer.mark() }
 fun ItemMeta.unmark() = apply { persistentDataContainer.unmark() }
 
@@ -60,7 +57,7 @@ fun ItemStack.has(key: NamespacedKey) = itemMeta.has(key)
 fun <P: Any, C: Any> ItemStack.get(key: NamespacedKey, type: PersistentDataType<P, C>): C? = itemMeta.get(key, type)
 
 fun ItemStack.flag(key: NamespacedKey) = apply { itemMeta.flag(key) }
-fun ItemStack.isMarked() = itemMeta.isMarked()
+fun ItemStack.hasMark() = itemMeta.hasMark()
 fun ItemStack.mark() = apply { itemMeta.mark() }
 fun ItemStack.unmark() = apply { itemMeta.unmark() }
 
@@ -76,21 +73,4 @@ fun temp(material: Material, uuid: UUID) = item(material, uuid).flag(Keys.Item.T
 
 fun ItemStack.hasUUID() = has(Keys.Item.UUID)
 fun ItemStack.getUUID() = get(Keys.Item.UUID, UUIDDataType)
-fun ItemStack.hasUUid(uuid: UUID) = hasUUID() && getUUID() == uuid
-
-fun ItemStack.compare(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is ItemStack) return false
-    if (!hasUUID() || !other.hasUUID()) return false
-    return getUUID() == other.getUUID()
-}
-
-abstract class PDCHolder : PersistentDataHolder {
-    companion object {
-        private val DATA_TYPE_REGISTRY: CraftPersistentDataTypeRegistry = CraftPersistentDataTypeRegistry()
-    }
-    protected fun newContainer(): PersistentDataContainer {
-        return CraftPersistentDataContainer(DATA_TYPE_REGISTRY)
-    }
-    protected abstract val container: PersistentDataContainer
-}
+fun ItemStack.hasUUID(uuid: UUID) = hasUUID() && getUUID() == uuid

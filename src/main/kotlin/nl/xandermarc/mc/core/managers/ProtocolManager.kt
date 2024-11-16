@@ -23,7 +23,6 @@ object ProtocolManager : Manager {
     private val closed = AtomicBoolean(false)
     val playerCache: MutableMap<UUID, Player> = Collections.synchronizedMap(HashMap())
     private val injectedChannels: MutableSet<Channel> = Collections.synchronizedSet(Collections.newSetFromMap(WeakHashMap()))
-    private val logger = Logger.getLogger(ProtocolManager::class.simpleName)
 
     fun isClosed(): Boolean = closed.get()
 

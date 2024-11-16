@@ -5,21 +5,20 @@ package nl.xandermarc.mc.lib.extensions
 import nl.xandermarc.mc.lib.data.Globals
 import java.util.logging.Level
 
-fun isNotLogging(name: String): Boolean {
-    if (!name.contains("Extensions")) return true
-    return (name.split("(").first().split(".").last() !in listOf("log", "info", "warn", "error", "debug", "infoAll", "warnAll", "debugAll", "errorAll"))
+fun isLoggingClass(name: String): Boolean {
+    return name.lowercase().contains("log")
 }
 
 fun <T> T.log(level: Level, message: String, allowFullTrace: Boolean = false): T {
     val full = Exception().stackTrace
         .map { it.toString() }
-        .first { isNotLogging(it) }
+        .first { !isLoggingClass(it) }
         .replace("\\\$lambda\\\$\\d*".toRegex(), "")
         .replace(".*\\.jar//".toRegex(), "")
 
     if (level == Level.INFO || !allowFullTrace) {
         val stripped = "(" + full.split("(").last()
-        Globals.logger.info( "$stripped: $message")
+        Globals.logger.log(level, "$stripped: $message")
     } else {
         Globals.logger.log(level, "$full: $message")
     }
