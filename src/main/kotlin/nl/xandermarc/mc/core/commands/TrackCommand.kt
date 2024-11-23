@@ -3,7 +3,10 @@ package nl.xandermarc.mc.core.commands
 import nl.xandermarc.mc.core.managers.EditorManager
 import nl.xandermarc.mc.core.managers.TrackManager
 import nl.xandermarc.mc.lib.commands.Command
-import nl.xandermarc.mc.lib.commands.annotations.*
+import nl.xandermarc.mc.lib.commands.annotations.Greedy
+import nl.xandermarc.mc.lib.commands.annotations.Lower
+import nl.xandermarc.mc.lib.commands.annotations.Permission
+import nl.xandermarc.mc.lib.commands.annotations.PlayerOnly
 import nl.xandermarc.mc.lib.extensions.send
 import nl.xandermarc.mc.ride.Track
 

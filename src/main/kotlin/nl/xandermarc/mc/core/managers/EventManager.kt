@@ -1,10 +1,8 @@
 package nl.xandermarc.mc.core.managers
 
-import io.netty.channel.Channel
 import nl.xandermarc.mc.lib.data.Config
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.data.Keys
-import nl.xandermarc.mc.lib.extensions.channel
 import nl.xandermarc.mc.lib.extensions.component
 import nl.xandermarc.mc.lib.extensions.has
 import nl.xandermarc.mc.lib.interfaces.Manager
@@ -29,29 +27,29 @@ object EventManager: Listener, Manager {
     private fun onJoin(event: PlayerJoinEvent) {
         event.joinMessage(Config.Messages.JOIN.component(event.player.name))
         removeTempItems(event.player)
-        if (ProtocolManager.isClosed()) return
-        val channel: Channel = event.player.channel
-        (channel.pipeline().get(ProtocolManager.IDENTIFIER) as? ProtocolManager.PacketHandler)?.apply {
-            player = event.player
-            ProtocolManager.playerCache.remove(event.player.uniqueId)
-            return
-        }
-        ProtocolManager.getOrCreateHandler(channel).player = event.player
+//        if (ProtocolManager.isClosed()) return
+//        val channel: Channel = event.player.channel
+//        (channel.pipeline().get(ProtocolManager.IDENTIFIER) as? ProtocolManager.PacketHandler)?.apply {
+//            player = event.player
+//            ProtocolManager.playerCache.remove(event.player.uniqueId)
+//            return
+//        }
+//        ProtocolManager.getOrCreateHandler(channel).player = event.player
     }
 
-    @EventHandler
-    fun onAsyncPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent?) {
-        if (ProtocolManager.isClosed()) return
-        ProtocolManager.pendingNetworkManagers.forEach {
-            ProtocolManager.getOrCreateHandler(it.channel)
-        }
-    }
+//    @EventHandler
+//    fun onAsyncPlayerPreLoginEvent(event: AsyncPlayerPreLoginEvent?) {
+//        if (ProtocolManager.isClosed()) return
+//        ProtocolManager.pendingNetworkManagers.forEach {
+//            ProtocolManager.getOrCreateHandler(it.channel)
+//        }
+//    }
 
-    @EventHandler
-    fun onPlayerLoginEvent(event: PlayerLoginEvent) {
-        if (ProtocolManager.isClosed()) return
-        ProtocolManager.playerCache[event.player.uniqueId] = event.player
-    }
+//    @EventHandler
+//    fun onPlayerLoginEvent(event: PlayerLoginEvent) {
+//        if (ProtocolManager.isClosed()) return
+//        ProtocolManager.playerCache[event.player.uniqueId] = event.player
+//    }
 
     override fun enable(plugin: JavaPlugin): Manager {
         plugin.server.pluginManager.registerEvents(EventManager, plugin)
@@ -71,7 +69,7 @@ object EventManager: Listener, Manager {
 
     private fun removeTempItems(player: Player) {
         player.inventory.removeAll { item ->
-            item.has(Keys.Item.TEMP)
+            item?.has(Keys.Item.TEMP) ?: false
         }
     }
 

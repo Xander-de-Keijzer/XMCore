@@ -4,11 +4,13 @@ package nl.xandermarc.mc.lib.extensions
 
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
+import io.papermc.paper.adventure.PaperAdventure
 import net.minecraft.core.RegistryAccess
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.Connection
 import net.minecraft.network.FriendlyByteBuf
 import net.minecraft.network.RegistryFriendlyByteBuf
+import net.minecraft.network.chat.Component
 import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.codec.StreamCodec
 import net.minecraft.network.protocol.Packet
@@ -16,32 +18,35 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerPlayer
-import net.minecraft.server.network.ServerPlayerConnection
+import net.minecraft.server.network.ServerGamePacketListenerImpl
 import net.minecraft.world.entity.EntityType
+import nl.xandermarc.mc.lib.data.Globals
 import org.bukkit.craftbukkit.entity.CraftPlayer
 import org.bukkit.craftbukkit.inventory.CraftItemStack
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.joml.Vector3d
+import java.util.*
 
 
 val Player.handle: ServerPlayer
     get() = (this as CraftPlayer).handle
 
-val Player.connection: ServerPlayerConnection
+val Player.connection: ServerGamePacketListenerImpl?
     get() = handle.connection
 
-val Player.network: Connection
-    get() = handle.connection.connection
+val Player.network: Connection?
+    get() = connection?.connection
 
-val Player.channel: Channel
-    get() = network.channel
+val Player.channel: Channel?
+    get() = network?.channel
 
-fun Player.sendPacket(packet: Packet<in ClientGamePacketListener>) =
-    connection.send(packet)
+fun Player.sendPacket(packet: Packet<in ClientGamePacketListener>) {
+    val connection = this.connection ?: return Globals.logger.warning("Trying to send a packet but no connection is present for ${this.name}.")
+    connection.sendPacket(packet)
+}
 
-fun Player.sendPacket(packet: nl.xandermarc.mc.lib.packets.Packet<*>) =
-    connection.send(packet.packet)
+fun Player.sendPacket(packet: nl.xandermarc.mc.lib.packets.Packet<*>) = sendPacket(packet.packet)
 
 val ItemStack.handle: net.minecraft.world.item.ItemStack
     get() = (this as CraftItemStack).handle
@@ -65,3 +70,11 @@ fun FriendlyByteBuf.writeVector3d(vector3d: Vector3d): FriendlyByteBuf =
 
 fun <T : Any> EntityDataAccessor<T>.create(value: T): SynchedEntityData.DataValue<T> =
     SynchedEntityData.DataValue.create(this, value)
+
+operator fun <T : Any> EntityDataAccessor<T>.invoke(value: T): SynchedEntityData.DataValue<T> = create(value)
+fun <T : Any> EntityDataAccessor<Optional<T>>.optional(value: T): SynchedEntityData.DataValue<Optional<T>> = create(Optional.of(value))
+
+fun EntityDataAccessor<Optional<Component>>.optional(value: net.kyori.adventure.text.Component): SynchedEntityData.DataValue<Optional<Component>> = create(Optional.of(PaperAdventure.asVanilla(value)))
+operator fun EntityDataAccessor<Component>.invoke(value: net.kyori.adventure.text.Component): SynchedEntityData.DataValue<Component> = create(PaperAdventure.asVanilla(value))
+
+fun <T : Any> RegistryFriendlyByteBuf.write(value: SynchedEntityData.DataValue<T>) = value.write(this)

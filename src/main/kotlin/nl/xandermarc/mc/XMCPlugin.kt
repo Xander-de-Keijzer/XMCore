@@ -4,7 +4,6 @@ import nl.xandermarc.mc.core.commands.TrackCommand
 import nl.xandermarc.mc.core.managers.AsyncManager
 import nl.xandermarc.mc.core.managers.EditorManager
 import nl.xandermarc.mc.core.managers.EventManager
-import nl.xandermarc.mc.core.managers.ProtocolManager
 import nl.xandermarc.mc.core.sql.createTables
 import nl.xandermarc.mc.core.sql.tables.SessionCoercions
 import nl.xandermarc.mc.core.sql.tables.UserSessions
@@ -36,7 +35,7 @@ class XMCPlugin : JavaPlugin() {
         val millis = measureMillis { time ->
             AsyncManager.enable(this).enabled(time)
             EventManager.enable(this).enabled(time)
-            ProtocolManager.enable(this).enabled(time)
+            XMCProtocol.enable(this).enabled(time)
             TestTrackedRide.enable().enabled(time)
 
             TestCommand.register(this).registered(time)
@@ -48,8 +47,9 @@ class XMCPlugin : JavaPlugin() {
     override fun onDisable() {
         val millis = measureMillis { time ->
             TestTrackedRide.disable().disabled(time)
+
             EditorManager.closeAll().disabled(time)
-            ProtocolManager.disable().disabled(time)
+            XMCProtocol.disable().disabled(time)
             EventManager.disable().disabled(time)
             AsyncManager.disable().disabled(time)
             supervisor.completeAll().complete(time) { "Coroutines completed. ($it)" }

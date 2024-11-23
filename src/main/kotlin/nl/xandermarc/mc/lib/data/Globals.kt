@@ -1,6 +1,9 @@
 package nl.xandermarc.mc.lib.data
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.contextual
@@ -27,7 +30,7 @@ object Globals {
     val server: Server get() = instance.server
     val world: World get() = server.getWorld(Config.Defaults.WORLD) ?: server.worlds.first()
     val fallbackLocation: Location get() = Config.Defaults.LOCATION
-    val players: Iterable<Player> get() = server.onlinePlayers
+    val players: Collection<Player> get() = server.onlinePlayers
     val json: Json = Json {
         encodeDefaults = true
         explicitNulls = true

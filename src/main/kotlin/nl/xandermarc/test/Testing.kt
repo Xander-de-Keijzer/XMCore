@@ -2,23 +2,11 @@ package nl.xandermarc.test
 
 import nl.xandermarc.mc.lib.commands.Command
 import nl.xandermarc.mc.lib.commands.annotations.*
-import nl.xandermarc.mc.lib.packets.BundlePacket
-import nl.xandermarc.mc.lib.packets.Packet
-import nl.xandermarc.mc.ride.Track
-import org.joml.Vector3d
 
 fun test() {
 
 }
 
-fun test2(vararg test: Any) {
-    fun receive(f: (Array<out Any>) -> Unit) {
-
-    }
-    receive {
-
-    }
-}
 
 @Permission("You are not allowed to use this command.")
 object TestCommand : Command(description = "Testing command") {

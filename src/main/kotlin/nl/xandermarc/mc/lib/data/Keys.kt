@@ -8,6 +8,7 @@ object Keys {
     fun key(key: String) = NamespacedKey(Globals.instance, key)
 
     val MARKER = key("xmc.marker")
+    val PROTOCOL = key("xmc.protocol")
 
     object Item {
         val UUID = key("xmc.item.uuid")

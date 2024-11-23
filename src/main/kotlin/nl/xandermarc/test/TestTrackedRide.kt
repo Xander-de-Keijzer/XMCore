@@ -8,7 +8,9 @@ object TestTrackedRide : Ride(
 ) {
 
     override fun load() {
-        val train = Train.Builder()
+        val train = Train.Builder(
+
+        )
         loadTrack("test_track") {
             addTrain(train, segment = segments.keys.random(), position = 20.0) //ID: 1
             addTrain(train, segment = segments.keys.random(), position = 30.0) //ID: 2

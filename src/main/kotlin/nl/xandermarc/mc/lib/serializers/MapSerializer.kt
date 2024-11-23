@@ -41,12 +41,9 @@ object MapSerializer : KSerializer<Map<String, Any?>> {
         @Suppress("UNCHECKED_CAST")
         return when (value) {
             null -> JsonNull
-            is Int -> JsonPrimitive(value)
-            is Long -> JsonPrimitive(value)
+            is Number -> JsonPrimitive(value)
             is String -> JsonPrimitive(value)
             is Boolean -> JsonPrimitive(value)
-            is Double -> JsonPrimitive(value)
-            is Float -> JsonPrimitive(value)
             is Map<*, *> -> JsonObject((value as Map<String, Any?>).mapValues { (_, v) -> encodeToJsonElement(v) })
             else -> throw SerializationException("Unsupported type for serialization: ${value::class}")
         }
@@ -60,6 +57,7 @@ object MapSerializer : KSerializer<Map<String, Any?>> {
                 element.booleanOrNull != null -> element.boolean
                 element.intOrNull != null -> element.int
                 element.longOrNull != null -> element.long
+                element.floatOrNull != null -> element.float
                 element.doubleOrNull != null -> element.double
                 else -> throw SerializationException("Unsupported primitive type: $element")
             }
