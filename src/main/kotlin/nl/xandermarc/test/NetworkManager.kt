@@ -3,7 +3,6 @@ package nl.xandermarc.test
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import nl.xandermarc.mc.lib.data.Globals
-import nl.xandermarc.mc.lib.extensions.warn
 import kotlin.time.Duration
 
 object NetworkManager {

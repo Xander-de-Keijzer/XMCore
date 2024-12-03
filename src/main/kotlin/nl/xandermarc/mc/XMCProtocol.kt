@@ -2,11 +2,8 @@ package nl.xandermarc.mc
 
 import io.ktor.util.collections.*
 import io.netty.channel.*
-import io.papermc.paper.adventure.PaperAdventure
 import io.papermc.paper.network.ChannelInitializeListenerHolder
 import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket
-import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.data.Keys
 import nl.xandermarc.mc.lib.extensions.channel
 import org.bukkit.entity.Player
@@ -14,7 +11,6 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.plugin.java.JavaPlugin
-import java.util.*
 
 object XMCProtocol : Listener {
     private const val HANDLER_NAME = "xmc_protocol"
@@ -24,15 +20,17 @@ object XMCProtocol : Listener {
         Protocol state
      */
 
-    fun enable(plugin: JavaPlugin) {
+    fun enable(plugin: JavaPlugin): XMCProtocol {
         ChannelInitializeListenerHolder.addListener(Keys.PROTOCOL) { insertHandler(it) }
         plugin.server.pluginManager.registerEvents(this, plugin)
         plugin.server.onlinePlayers.forEach(::reset)
+        return this
     }
 
-    fun disable() {
+    fun disable(): XMCProtocol {
         insertedChannels.forEach(::removeHandler)
         insertedChannels.clear()
+        return this
     }
 
     /*
@@ -76,13 +74,6 @@ object XMCProtocol : Listener {
     private fun onPlayerJoin(event: PlayerJoinEvent) {
         event.player.channel?.apply {
             pipeline().get(HANDLER_NAME).link(event.player)
-            write(ClientboundResourcePackPushPacket(
-                UUID.randomUUID(),
-                "https://cdn.modrinth.com/data/w0TnApzs/versions/UIpuBfGX/Faithful%2032x%20-%201.21.3.zip",
-                "test",
-                true,
-                Optional.of(PaperAdventure.asVanilla(Globals.message.deserialize("<red>ResourcePack is required")))
-            ))
         }
     }
 

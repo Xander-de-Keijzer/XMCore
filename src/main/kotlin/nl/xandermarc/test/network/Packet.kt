@@ -115,15 +115,15 @@ enum class Packet(
         fun decode(ordinal: Int) = entries.firstOrNull { it.ordinal == ordinal }
 
         fun receive(data: Data) {
-            Globals.logger.info("Receiving data ${Globals.json.encodeToString(data)}")
+            Globals.logger.info { "Receiving data ${Globals.json.encodeToString(data)}" }
 
             if (data.type == Type.RESPONSE || data.type == Type.EXCEPTION) {
                 val listening = listeners.filter { it.uid == data.uid }
                 if (listening.isEmpty()) {
                     if (data.type == Type.RESPONSE) {
-                        Globals.logger.warning("Received data $data which is a response packet but no listeners were registered for it.")
+                        Globals.logger.warn { "Received data $data which is a response packet but no listeners were registered for it." }
                     } else {
-                        Globals.logger.info("Received exception $data")
+                        Globals.logger.info { "Received exception $data" }
                     }
                 }
                 listening.forEach { listener ->
@@ -133,7 +133,7 @@ enum class Packet(
             }
         }
         fun send(data: Data) {
-            Globals.logger.info("Sending data ${Globals.json.encodeToString(data)}")
+            Globals.logger.info { "Sending data ${Globals.json.encodeToString(data)}" }
             launchAsync {
                 // TODO Actually send data
                 receive(data)

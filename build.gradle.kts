@@ -35,6 +35,9 @@ dependencies {
     compileOnly(kotlin("stdlib"))
     compileOnly(kotlin("reflect"))
     compileOnly("org.jetbrains.kotlinx:kotlinx-datetime:0.6.1")
+    implementation("io.github.oshai:kotlin-logging-jvm:7.0.0")
+    implementation("io.github.oshai:kotlin-logging:7.0.0")
+    implementation("org.slf4j:slf4j-simple:2.0.16")
 
     // Coroutines
     compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
@@ -74,6 +77,8 @@ dependencies {
     includeInJar("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     includeInJar("org.jetbrains.exposed:exposed-kotlin-datetime:$exposedVersion")
     includeInJar("com.h2database:h2:$h2Version")
+    includeInJar("io.github.oshai:kotlin-logging-jvm:7.0.0")
+    includeInJar("io.github.oshai:kotlin-logging:7.0.0")
 }
 
 tasks.jar {

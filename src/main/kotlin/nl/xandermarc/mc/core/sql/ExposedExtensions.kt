@@ -22,8 +22,8 @@ fun transaction(statement: Transaction.() -> Unit) {
 //    }
 }
 
-fun <T> asyncTransaction(statement: suspend Transaction.() -> T) {
-    statement.launchAsync("exposed_suspend_transaction") {
+fun <T> asyncTransaction(name: String? = null, statement: suspend Transaction.() -> T) {
+    statement.launchAsync("async_transaction($name)") {
         newSuspendedTransaction(
             context=coroutineContext,
             db=Globals.internalDB,

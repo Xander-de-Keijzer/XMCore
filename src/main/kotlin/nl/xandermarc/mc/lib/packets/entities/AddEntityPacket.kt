@@ -1,9 +1,10 @@
 package nl.xandermarc.mc.lib.packets.entities
 
+import net.minecraft.core.registries.Registries
+import net.minecraft.network.codec.ByteBufCodecs
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.world.entity.EntityType
-import nl.xandermarc.mc.lib.extensions.build
-import nl.xandermarc.mc.lib.extensions.writeEntityType
+import nl.xandermarc.mc.lib.extensions.buildDefault
 import nl.xandermarc.mc.lib.extensions.writeVector3d
 import nl.xandermarc.mc.lib.packets.Packet
 import org.joml.Vector3d
@@ -21,10 +22,13 @@ class AddEntityPacket(
     headYaw: Double = 0.0,
     entityData: Int = 0,
     velocity: Vector3d = Vector3d()
-) : Packet<ClientboundAddEntityPacket>(ClientboundAddEntityPacket.STREAM_CODEC.build {
+) : Packet<ClientboundAddEntityPacket>(ClientboundAddEntityPacket.STREAM_CODEC.buildDefault {
     writeVarInt(id)
     writeUUID(uuid)
-    writeEntityType(entityType)
+    ByteBufCodecs.registry(Registries.ENTITY_TYPE).encode(
+        this,
+        entityType,
+    )
     writeVector3d(location)
     writeByte(floor(pitch * 256.0f / 360.0f).toInt())
     writeByte(floor(yaw * 256.0f / 360.0f).toInt())

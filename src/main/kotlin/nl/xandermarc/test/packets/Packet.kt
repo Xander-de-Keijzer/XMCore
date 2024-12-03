@@ -2,10 +2,9 @@ package nl.xandermarc.test.packets
 
 import nl.xandermarc.mc.lib.data.Globals
 import org.bukkit.entity.Player
-import java.util.UUID
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.random.Random
-import kotlin.uuid.Uuid
 
 enum class Packet(private val id: Int, private val domain: Domain) {
     CREATE_AUDIO_SESSION(1, Domain.AUDIO_SESSION)

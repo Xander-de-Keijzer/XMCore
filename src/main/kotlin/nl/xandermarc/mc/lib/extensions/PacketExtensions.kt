@@ -2,10 +2,10 @@
 @file:JvmMultifileClass
 package nl.xandermarc.mc.lib.extensions
 
+import io.netty.buffer.ByteBuf
 import io.netty.buffer.Unpooled
 import io.netty.channel.Channel
 import io.papermc.paper.adventure.PaperAdventure
-import net.minecraft.core.RegistryAccess
 import net.minecraft.core.registries.Registries
 import net.minecraft.network.Connection
 import net.minecraft.network.FriendlyByteBuf
@@ -17,6 +17,7 @@ import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.server.MinecraftServer
 import net.minecraft.server.level.ServerPlayer
 import net.minecraft.server.network.ServerGamePacketListenerImpl
 import net.minecraft.world.entity.EntityType
@@ -27,6 +28,7 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import org.joml.Vector3d
 import java.util.*
+import java.util.function.Function
 
 
 val Player.handle: ServerPlayer
@@ -41,8 +43,12 @@ val Player.network: Connection?
 val Player.channel: Channel?
     get() = network?.channel
 
+val registryByteBufBuilder: Function<ByteBuf, RegistryFriendlyByteBuf> =
+    RegistryFriendlyByteBuf.decorator(MinecraftServer.getServer().registryAccess())
+fun registryByteBuf(buf: ByteBuf = Unpooled.buffer()) = registryByteBufBuilder.apply(buf)
+
 fun Player.sendPacket(packet: Packet<in ClientGamePacketListener>) {
-    val connection = this.connection ?: return Globals.logger.warning("Trying to send a packet but no connection is present for ${this.name}.")
+    val connection = this.connection ?: return Globals.logger.warn { "Trying to send a packet but no connection is present for ${this.name}." }
     connection.sendPacket(packet)
 }
 
@@ -51,16 +57,13 @@ fun Player.sendPacket(packet: nl.xandermarc.mc.lib.packets.Packet<*>) = sendPack
 val ItemStack.handle: net.minecraft.world.item.ItemStack
     get() = (this as CraftItemStack).handle
 
-inline fun <V : Packet<ClientGamePacketListener>> StreamCodec<FriendlyByteBuf, V>.build(
+inline fun <reified V : Packet<ClientGamePacketListener>> StreamCodec<FriendlyByteBuf, V>.build(
     builder: FriendlyByteBuf.() -> Unit
-): V =
-    decode(FriendlyByteBuf(Unpooled.buffer()).apply(builder))
+): V = decode(FriendlyByteBuf(Unpooled.buffer()).apply(builder))
 
-inline fun <V : Packet<ClientGamePacketListener>> StreamCodec<RegistryFriendlyByteBuf, V>.build(
-    registryAccess: RegistryAccess = RegistryAccess.EMPTY,
+inline fun <reified V : Packet<ClientGamePacketListener>> StreamCodec<RegistryFriendlyByteBuf, V>.buildDefault(
     builder: RegistryFriendlyByteBuf.() -> Unit
-): V =
-    decode(RegistryFriendlyByteBuf(Unpooled.buffer(), registryAccess).apply(builder))
+): V = decode(registryByteBuf().apply(builder))
 
 fun RegistryFriendlyByteBuf.writeEntityType(entityType: EntityType<*>) =
     ByteBufCodecs.registry(Registries.ENTITY_TYPE).encode(this, entityType)

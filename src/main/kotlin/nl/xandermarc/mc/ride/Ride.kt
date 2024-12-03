@@ -4,43 +4,44 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import nl.xandermarc.mc.core.managers.TrackManager
 import nl.xandermarc.mc.lib.Math.encode
-import nl.xandermarc.mc.lib.extensions.info
 import nl.xandermarc.mc.lib.extensions.launchAsync
 import nl.xandermarc.mc.lib.extensions.vec3d
+import nl.xandermarc.mc.lib.logging.Logger
+import nl.xandermarc.mc.lib.logging.Logging.logger
 
 abstract class Ride(
     val name: String
-) {
+) : Logger by logger("ride<$name>") {
     internal val tracks = mutableMapOf<String, Track>()
     internal val trains = mutableListOf<Train>()
 
     private val mutex = Mutex()
-    private fun launch(action: suspend () -> Unit) = launchAsync {
+    private fun launch(action: String, block: suspend () -> Unit) = launchAsync("Ride<${this.name}>.$action") {
         mutex.withLock {
             check(state != State.DISABLING && state != State.ENABLING) {
                 "Ride is stuck in transitioning state of ${state.name}"
             }
-            action()
+            block()
         }
     }
 
-    fun enable() = launch {
+    fun enable() = launch("enable") {
         if (state != State.DISABLED) return@launch
         state = State.ENABLING
         load()
         state = State.ENABLED
-        info { "Ride $name has been enabled." }
+        info { "Ride has been enabled." }
     }
 
-    fun disable() = launch {
+    fun disable() = launch("disable") {
         if (state != State.ENABLED) return@launch
         state = State.DISABLING
         unload()
         state = State.DISABLED
-        info { "Ride $name has been disabled." }
+        info { "Ride has been disabled." }
     }
 
-    fun reset() = launch {
+    fun reset() = launch("reset") {
         if (state == State.ENABLED) {
             state = State.DISABLING
             unload()
@@ -49,7 +50,7 @@ abstract class Ride(
         state = State.ENABLING
         load()
         state = State.ENABLED
-        info { "Ride $name has been reset." }
+        info { "Ride has been reset." }
     }
 
     private fun unload() {

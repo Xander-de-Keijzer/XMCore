@@ -33,5 +33,7 @@ abstract class Entity(
     companion object {
         private val atomicInt = AtomicInteger(1)
         val nextId: Int get() = atomicInt.getAndIncrement()
+        private val random = Random(926337335345937)
+        val nextIdRange: Int get() = random.nextInt(Int.MIN_VALUE, 0)
     }
 }

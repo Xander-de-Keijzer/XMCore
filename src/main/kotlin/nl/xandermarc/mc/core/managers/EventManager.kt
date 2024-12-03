@@ -1,11 +1,16 @@
 package nl.xandermarc.mc.core.managers
 
+import net.minecraft.world.entity.EntityType
 import nl.xandermarc.mc.lib.data.Config
+import nl.xandermarc.mc.lib.data.EntityData
 import nl.xandermarc.mc.lib.data.Globals
 import nl.xandermarc.mc.lib.data.Keys
-import nl.xandermarc.mc.lib.extensions.component
-import nl.xandermarc.mc.lib.extensions.has
+import nl.xandermarc.mc.lib.extensions.*
 import nl.xandermarc.mc.lib.interfaces.Manager
+import nl.xandermarc.mc.lib.packets.BundlePacket
+import nl.xandermarc.mc.lib.packets.entities.AddEntityPacket
+import nl.xandermarc.mc.lib.packets.entities.SetEntityDataPacket
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
@@ -14,6 +19,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerLoginEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.plugin.java.JavaPlugin
+import org.joml.Vector3f
 
 object EventManager: Listener, Manager {
 
@@ -26,7 +32,15 @@ object EventManager: Listener, Manager {
     @EventHandler
     private fun onJoin(event: PlayerJoinEvent) {
         event.joinMessage(Config.Messages.JOIN.component(event.player.name))
-        removeTempItems(event.player)
+        BundlePacket(
+            AddEntityPacket(24531, EntityType.ITEM_DISPLAY, event.player.location.toVector3d()),
+            SetEntityDataPacket(24531,
+                EntityData.ITEM_STACK_ID(item(Material.GRAY_CONCRETE).handle),
+                EntityData.SCALE_ID(Vector3f(0.2f, 1.2f, 0.8f)),
+                EntityData.SHARED_FLAGS_ID(0x40) // Only glowing
+            )
+        ).send(event.player)
+
 //        if (ProtocolManager.isClosed()) return
 //        val channel: Channel = event.player.channel
 //        (channel.pipeline().get(ProtocolManager.IDENTIFIER) as? ProtocolManager.PacketHandler)?.apply {

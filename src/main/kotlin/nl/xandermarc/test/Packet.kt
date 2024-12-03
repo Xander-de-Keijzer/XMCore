@@ -1,5 +1,6 @@
 package nl.xandermarc.test
 
+import nl.xandermarc.test.Packet.RequestListener
 import kotlin.random.Random
 
 open class Packet<T : Packet<T>>(

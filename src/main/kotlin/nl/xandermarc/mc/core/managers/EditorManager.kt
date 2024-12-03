@@ -28,26 +28,27 @@ object EditorManager: Listener {
         if (editors.any { it.player == player })
             throw IllegalStateException("Editors(${editors.filter { it.player == player }}) belonging to ${player.name} were still present after closing.")
     }
-    fun closeAll() {
+    fun closeAll(): EditorManager {
         editors.forEach { it.close() }
         if (editors.isNotEmpty())
             throw IllegalStateException("Editors($editors) were still present after closing.")
         editors.clear()
+        return this
     }
 
     @EventHandler
     private fun clickEvent(event: PlayerInteractEvent) {
-        Globals.logger.info("$event")
+        Globals.logger.info { event }
     }
 
     @EventHandler
     private fun clickEvent(event: PlayerInteractEntityEvent) {
-        Globals.logger.info("$event")
+        Globals.logger.info { event }
     }
 
     @EventHandler
     private fun clickEvent(event: PlayerInteractAtEntityEvent) {
-        Globals.logger.info("$event")
+        Globals.logger.info { event }
     }
 
     @EventHandler

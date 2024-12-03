@@ -15,3 +15,5 @@ fun Float.toDegrees() = this * RADIANS_TO_DEGREES_F
 
 fun Double.squared() = this * this
 fun Double.cubed() = this * this * this
+
+fun Int.pad(width: Int) = toString().padStart(width, '0')

@@ -97,7 +97,7 @@ class Animation(
 
     // Optional utility for debugging or logging purposes
     fun logCurrentState() {
-        Globals.logger.info("[Animation] Current Position: $current | Progression: $progression")
+        Globals.logger.info { "[Animation] Current Position: $current | Progression: $progression" }
     }
 }
 

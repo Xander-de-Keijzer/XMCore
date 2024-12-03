@@ -8,13 +8,15 @@ import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
 import java.util.*
 
-abstract class AbstractEditor<T>(
-    private val instance: T,
+abstract class AbstractEditor<E : AbstractEditor<E>>(
     val player: Player,
-    vararg toolMaps: Map<Int, Tool<T>>
+    vararg toolMaps: Map<Int, Tool<E>>
 ) {
     private val toolMapList = toolMaps.toList()
     private var toolMapIterator = toolMapList.iterator()
+
+    @Suppress("LeakingThis", "UNCHECKED_CAST")
+    private val editor = this as E
 
     private fun unloadTools() {
         toolMapList.flatMap { it.values }.forEach { tool ->
@@ -36,9 +38,9 @@ abstract class AbstractEditor<T>(
             .filter { tool -> tool.isItem(event.item) }
             .forEach { tool ->
                 when(event) {
-                    is ChatEvent -> tool.onChat.second(instance, event.message)
-                    is RightClickEvent -> tool.onRightClick.second(instance)
-                    is LeftClickEvent -> tool.onLeftClick.second(instance)
+                    is RightClickEvent -> tool.onRightClick.second(editor)
+                    is LeftClickEvent -> tool.onLeftClick.second(editor)
+                    is ChatEvent -> tool.onChat.second(editor, event.message)
                 }
             }
     }
@@ -59,12 +61,12 @@ abstract class AbstractEditor<T>(
 
     protected open fun stop() {}
 
-    data class Tool<T>(
+    data class Tool<E : AbstractEditor<E>>(
         private val name: String,
         private val material: Material,
-        val onRightClick: Pair<String, T.() -> Unit> = "" to {},
-        val onLeftClick: Pair<String, T.() -> Unit> = "" to {},
-        val onChat: Pair<String, T.(String) -> Unit> = "" to {},
+        val onRightClick: Pair<String, E.() -> Unit> = "" to {},
+        val onLeftClick: Pair<String, E.() -> Unit> = "" to {},
+        val onChat: Pair<String, E.(String) -> Unit> = "" to {},
     ) {
         val uuid: UUID = UUID.randomUUID()
         val item: ItemStack = temp(material, uuid)
